@@ -1,0 +1,119 @@
+*******************************************************************************************/*2017.11.14 8. GYAKORLAT*/
+
+Naplózás (3 féle)
+
+    INPUT: blokkot viszi be
+    <T START> <=> <START T> <=> <T BEGIN> :: elkezdõdik a T nevû tranzakció
+    <T, változó, érték> spec: <T, változó, érték1, érték2>
+    <T COMMIT>
+    <T ABORT>
+    <T END>
+    
+    1. módszer: UNDO
+    -Jelölései: 
+        <T START>
+        <T, változó, érték=mi volt(az érték amit meg akarunk változtatni)>
+        <T COMMIT>
+    /*PÉLDA: T: ügyfél, A: egyik zseb, B: másik zseb; (zsebben lévõ péntének értékének duplázása); csak akkor távozhat, ha ez megtörtént
+    --elszáll a gép: */
+    Hiba esetén: alulról fölfelé haladunk, visszaállítjuk a kezdeti állapotba, majd lezárjuk: <T ABORT>
+    
+    2. módszer. REDO
+    -Jelölései: 
+        <T START>
+        <T, változó, érték=új érték(az érték amire akarunk változtatni; amit az ügyfél szeretne)>--felvesszük elõször a rendelést
+        <T COMMIT>--ha az ügyfél már nem kér semmi többet; ekkor állunk neki az adatok végrehajtására
+        <T END>-- megkapta a rendelését
+        
+    Hiba esetén: felülrõl lefelé újra megcsinálni a rendelést
+    --end elõtt száll el; COMMIT után 
+    (T A,16
+    T B,16
+    T END)
+    
+    
+    PL2: (Napló tartalma)
+    ()
+    <A START>
+    <T A,16>
+    <T B,16>
+    ()
+    --elszáll a gép
+    -- itt az ügyfél meszakította a "telefonhívást", nem tudjuk akart-e még valamit
+    --mo: feljegyezzük, hogy a tranzakció megszakad: 
+      <T ABORT>
+    /************/  
+      
+    Napi zárás: feljegyezzük azokat akik még mondják mit szeretnének; mindenki aki a START fölött van, annak van COMMIT-ja kivéve aki a zárójelben van, mert
+    az még "rendel". <END CKPT> fölött akinek van COMMIT-ja nem zárja le külön, akinek van, az elérte az END-et. START -ban olyanok, akinek még nincs COMMIT-juk. 
+    <START CKPT(T2)>
+    T1-el itt nem kell foglalkozni, nincs benne a START-ban, tuti van COMMIT-ja. 
+    
+    Dia mo: 
+    T2 B,10
+    T2 C,15
+    T3 D,20
+    T2 END
+    T3 END
+    
+    másik: 
+    T2 B,10
+    T2 C,15
+    T3 ABORT
+    T2 END
+    
+    mo 3: az elõzõ napi startjáig vissza kell menni; onnan kell kezdeni (azért így, mert nem kell minden tranzakció végére END)
+    
+    3. módszer: UNDO-REDO -- addig nem mehet el az ugyfél, míg enm kapja meg amit rendelt
+    -Jelölései: 
+        <T START>
+        <T, változó, érték1=mi volt(az érték amit meg akarunk változtatni) ,érték2=új érték(az érték amire akarunk változtatni; amit az ügyfél szeretne)>-- miközben kéri az " A pizzát", már elkezdik sülni
+        --miközben még rendel és már közben kapja
+        <T COMMIT>-- mindent elmondott amit akart; megkapott mindent? (van END? ), ha nincs akkor mint a REDO-nál, fülölrõl lefelé "újra megkapja" amit akart
+        <T END>-- ha át is vette turira amit kért
+        
+    -- COMMIT felett száll el: Az üghyfél nem fejezte be amit kért, de lehet hogy már kapott valamit:: mo: visszaállítjuk alulról fölfelé az eredeti állapotot,. majd <T ABORT>
+    
+    Napi zárás: 
+    (piszkos puffer: változásban érintett puffer)
+    
+    mo 1.:
+    T2 C,15
+    T3 D, 20
+    T2 END
+    T3 END
+    
+    mo 2.:
+    T2 C,15
+    T2 END
+    T3 D,19
+    T3 ABORT
+    
+    mo 3.: (ZH)
+    7. pont után száll el (dia)
+    --visszamenni: az ELÕZÕ STARTIG; onnan lefelé végrehajtuk mindet és END-el zárunk, kivéve T2, mert azt alulról fölfelé, és ABORT-al zárjuk
+    T2 C 14
+    T2 B 9
+    T2 ABORT
+    ...--visszamenni T-100 -ig és minden visszaállítani
+    T1 A, 5
+    T1 END
+
+    
+Konzisztenciakezelés
+A és B fizetése azon a napon ugyanannyi-e? 
+Két fõnök: egyik +100, másik +200 ft emelést akar az alkalmazottainak
+...dia
+
+Nem szabad: 
+- tarnzakción belül sorrendet változtatni (közéjük betehetek más utasítást, de a sorrend maradjon! )
+- 2 tranzakció esetén nem szabad cserélni, ha ugyanazt az adatot írják w1(A) és w2(A) pl. nem cserélhetõ, mindketten A-t írják w-write
+
+Szabad: 
+- ha kül tranzakciók olvasnak (akkár ugyanazt az adatot is), akkor õk cserélhetõek r1(A), r2(A) felcserélhetõ
+-cserélni, ha az egyik olvas, a másik ír, de különbözõ adatot pl: r1(A), w2(B)
+
+Jó-e egy bizonyos ütemezés? 
+Ha fel tudom cserélni olyanra, mintha a két fõnök egymás után jött volna: jó
+
+

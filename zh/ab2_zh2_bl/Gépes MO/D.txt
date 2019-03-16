@@ -1,0 +1,33 @@
+2015-12-3
+BRANYI ZH (branyi_zh2_D.jpg) 
+Feladat1: ??? majd
+Feladat2:
+---------------------------------------------------------------------------------------
+A
+select * from hr.employees;
+
+MEGOLDÁS: 
+explain plan SET statement_id='A' for
+select * from hr.employees where manager_id<150 and department_id<50;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','A','serial'));
+
+---------------------------------------------------------------------------------------
+B
+select * from hr.employees;
+select * from hr.jobs;
+
+MEGOLDÁS: (nem jó)
+explain plan SET statement_id='B' for
+select * from hr.jobs natural join hr.employees where hr.employees.first_name='David';
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','B','serial'));
+
+---------------------------------------------------------------------------------------
+C
+select * from hr.employees;
+
+
+---
+explain plan SET statement_id='C' for
+select job_id,avg(salary) from hr.employees natural join hr.employees group by job_id having  avg(salary)>10; 
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','C','serial'));
+

@@ -1,0 +1,2079 @@
+
+/*ZH*/
+/*BAJÁRI LÚCIA - V6RKH9*/
+/*1*/
+/*Legöregebb családtag melyik esküvöre (házid) vitte a legtöbb ajándékot*/
+/*Próbálkozások: */
+select max(életévek) from BRANYI."CSALÁDTAG";
+
+select szigsz from BRANYI."CSALÁDTAG" where életévek=(select max(életévek) from BRANYI."CSALÁDTAG");/*select max(életévek) from BRANYI."CSALÁDTAG";*/;
+
+select házid from BRANYI."JÁRT_OTT" where szigsz=(select szigsz from BRANYI."CSALÁDTAG" where életévek=(select max(életévek) from BRANYI."CSALÁDTAG"));
+
+
+select szigsz, max(életévek) from (select * from BRANYI."CSALÁDTAG" natural join BRANYI."JÁRT_OTT") group by szigsz order by szigsz;
+select max(ajándékdb) ,házid, max(életévek) from (select * from BRANYI."CSALÁDTAG" natural join BRANYI."JÁRT_OTT") group by házid, ajándékdb;
+/*2*/
+/*Melyik feleség ment el legalább egy esküvõre vendégként a férje nélkül?*/
+/*3*/
+/*Ki nem adott egyik gyerekének sem Lászlót? */
+/*Ki vette el a nejét...*/
+SELECT * FROM BRANYI."CSALÁDTAG" natural join BRANYI."SZÜLÕ";
+-------------------------------------------------------------------------------------------------------------------------------------------
+/*5*/
+/*Kik a legfiatalabb családtagok*/
+select szigsz, min(életévek) from BRANYI."CSALÁDTAG" group by szigsz order by min("ÉLETÉVEK");
+/*Maga a legfiatalabb: */
+select szigsz, "VEZETÉKNÉV","KERESZTNÉV", életévek
+from BRANYI."CSALÁDTAG" where életévek=(select  min(életévek) from BRANYI."CSALÁDTAG");
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+/*6*/
+/*Melyik esküvõn volt minden LÁszló keresztnevû családtag? */
+select * from BRANYI."CSALÁDTAG" natural join BRANYI."JÁRT_OTT";
+select házid from BRANYI."CSALÁDTAG" natural join BRANYI."JÁRT_OTT" where keresztnév='László' group by házid;
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+/*8*/
+
+/*Öreg János életéve: */
+select "ÉLETÉVEK" from BRANYI."CSALÁDTAG" where "VEZETÉKNÉV"='Öreg' and "KERESZTNÉV"='János';
+/*Öreg Jánosnál idõsebb személyek: */
+select * from BRANYI."CSALÁDTAG" where életévek>(select "ÉLETÉVEK" from BRANYI."CSALÁDTAG" where "VEZETÉKNÉV"='Öreg' and "KERESZTNÉV"='János');
+/*Ahol járt Öreg Jánosnál idõsebb személy*//*Ezek szerint Öreg Jánosnál idõsebb személy nem volt egy esküvõn sem. */
+select* from BRANYI."JÁRT_OTT" where 
+szigsz=(select szigsz from BRANYI."CSALÁDTAG" where életévek>(select "ÉLETÉVEK" from BRANYI."CSALÁDTAG" where "VEZETÉKNÉV"='Öreg' and "KERESZTNÉV"='János'));
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+select * from BRANYI."CSALÁDTAG" natural join BRANYI."HÁZASSÁG";
+
+select * from BRANYI."HÁZASSÁG";
+select* from BRANYI."JÁRT_OTT";
+select * from BRANYI."CSALÁDTAG";
+
+/*7*/
+/*Kik azok, akik minden esküvõre a legtöbb ajándékot vitték? */
+
+select max(ajándékdb) from BRANYI."JÁRT_OTT" natural join BRANYI."HÁZASSÁG";
+
+
+
+
+
+
+
+
+
+select * from emp;
+select * from emp where sal>1000;
+select * from emp where sal>1000 group by deptno; /*HIBÁS! */
+/*GROUP BY esetén: 
+- *-al tilos leírni 
+*/
+select deptno from emp where sal>1000 group by deptno;
+
+select deptno,count(*) from emp where sal>1000 group by deptno;
+/*count(*)
+- 1-1 halmazrészben hány elem van
+*/
+select deptno,count(*) from emp where sal>1000 group by deptno having count(*)>3;
+select deptno,count(*) from emp where sal>1000 group by deptno having count(*)>3 order by count(*); /*Count * szerint nagyság szerint rendezett*/
+select deptno,count(*) from emp where sal>1000 group by deptno having count(*)>3 order by 1; /*1. oszlop szerint */
+select deptno,count(*) from emp where sal>1000 group by deptno having count(*)>3 order by 1 desc; /*CSÖKKENÕ SORRENDBE RENDEZÉS*/
+
+select deptno, job, count(*) from emp where sal>1000 group by deptno,job;
+select job, count(*) from emp where sal>1000 group by deptno,job;
+
+select * from kimenetelek;
+select csatanév,count( distinct eredmény) from kimenetelek group by csatanév; /*1  csatában hányféle esemény történt */
+select count(distinct eredmény) from kimenetelek;
+
+select csatanév,count(distinct eredmény) from kimenetelek group by csatanév 
+having count(distinct eredmény)=(select count(distinct eredmény) from kimenetelek);
+
+select csatanév,count(distinct upper(eredmény)) from kimenetelek group by csatanév 
+having count(distinct upper(eredmény))=(select count(distinct upper(eredmény)) from kimenetelek); /*Ok, ok miatt nagybetûsítettünk; melyik csatában történt meg a 3 esemény*/
+
+select csatanév, hajónév, count( distinct upper(eredmény)) from kimenetelek
+group by csatanév, hajónév order by csatanév, hajónév; /*Melyik csatában melyik hajóval történt meg az esemény. NEM A KÉRDÉSRE VÁLASZOL!!! */
+
+select csatanév, hajónév, count( distinct upper(eredmény)) from kimenetelek
+group by csatanév, hajónév order by csatanév, hajónév desc; /*csatanév: ABC szerint; hajónév: csökkenõben ... */
+
+select csatanév, hajónév, count( distinct upper(eredmény)) from kimenetelek
+group by csatanév, hajónév order by substr(csatanév,2,1); /*Csatanév 2. betûje alapján rendezi sorrendben a csataneveket*/
+select csatanév, hajónév, count( distinct upper(eredmény)) from kimenetelek
+group by csatanév, hajónév order by substr(csatanév,2,1) || substr(hajónév,2,1);
+
+
+
+select count(*) from emp;
+select * from emp;
+select count(ename) from emp;
+select avg(sal) from emp; /* select sum(sal)/count(*) from emp;*/ /*ÁTLAG*/
+select sum(sal)/count(*) from emp;
+
+select avg(comm) from emp; /*select sum(comm)/count(*) from emp;*/ /*Nem ugyanaz, sok helyen az érték NULL
+avg-nél csak a nem NULL elemeket nézik
+*/
+select sum(comm)/count(*) from emp;
+
+
+select sal, comm, sal+comm from emp; /*LÉNYEGES!! NULL+VALAMI=NULL; SUM erre figyel*/
+
+select * from emp;
+select * from dept;
+select * from emp,dept;/* cross join*/
+select deptno, deptno_1 from emp,dept;
+select emp.deptno, dept.deptno from emp,dept;
+
+select * from emp natural join dept; /*Elõre kerül a közös oszlop (ami alapján "hasonlít")*/
+/*Relációs algebrában oda kerül az esõ táblába ahol volt, a másodikból eltûnik*/
+/*Nincs 50-es munkahely, azt nem tudja párosítani*/
+
+select * from emp left outer join dept using(deptno);
+select * from emp right outer join dept using(deptno);
+select * from emp full outer join dept using(deptno); /*natural join párosított*/
+
+
+
+
+/*GYAK 7*/
+
+select concat('alma','fa', 'k') from dual;
+
+select 'alma' || 'f' || 'a' from dual;
+
+select lpad('szia',12,'*') from dual;
+select rpad('szia',12,'xyz') from dual;
+
+select ltrim('xxyzyyyyyyzyzzyszia','xyz') from dual; /*elsõ kül karakterig keres balról*/
+select rtrim('sziaxyzzzzxxxyyyzyzy','xyz') from dual; /*-||- jobbról*/
+/*trim: jobbról-balról szóközöket szed le*/
+
+select trim ('    szia szia   ') x from dual;
+
+select length(trim('  szia  ') ) hossz from dual; /*szia karakterek hossza*/
+
+select substr('kutyafüle',6,3) from dual;
+select substr('kutyafüle',6) from dual;
+select substr('kutyafüle',-6,3) from dual;
+
+select instr('0011101100110001001010100100','10') from dual; /**/
+select instr('0011101100110001001010100100','10',10) from dual;
+select instr('0011101100110001001010100100','10',5,5) from dual; /*5. helytõl kezdve 5. elõfordulása hol van */
+
+select instr('0011101100110001001010100100','00',1,5) from dual; /*000 esetén a 2. nullától kezd */
+
+select current_date from dual;
+select current_timestamp from dual;
+select sysdate from dual;
+
+select '1' || '1' from dual;
+select '1'+'1' from dual;
+select '1'+1 from dual;
+select 'a'+1 from dual; /*a-t nem tudja számmá konvertálni*/
+select '1e1'+1 from dual; /*1e1: számábrázolás : 10*/
+
+select to_char(1) || to_char(1) from dual;
+
+select to_char(current_date,'Day') from dual;
+select to_char(current_date,'DD') from dual;
+select to_char(current_date,'DDD') from dual; /*Év hanyadik baoja. */
+
+/*Nikovits: fv-ek.docx */
+
+select to_char(12345,'099999') from dual; /*9-szám; 0- ha nincs számjegy, nulla legyen*/
+
+select to_date('2017-03-28','YYYY-MM-DD') from dual;
+
+select to_number('25e5') from dual;
+
+select user from dual;
+select UID from dual; /*Hanyadikként kerültem a rendszerbe*/
+
+
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*04.24*/
+
+select * from sz;
+
+insert into sz(n) values ('Robi'); /*ha gyümölcsnek van default, akkor az lesz, különben pedig NULL*/
+
+insert into sz(n,gy) values ('Nyuszi','répa');
+insert into sz(gy,n) values ('Nyuszi','répa'); /*Nyuszi egy gyümölcs ebben az esetben, Számít a sorrend! */
+
+insert into sz values ('Robi','csoki'); /*így is jó*/
+
+select * from emp;
+
+insert into sz(n) select ename from emp; /*empbõl az ename oszlop elemei mennek a szeret tábla n oszlopértékeibe*/
+insert into sz select ename,job from emp; /*sz n és gy oszlopaiba kerülnek*/
+
+/*UPDATE*/
+
+update sz set gy='saláta' where gy='csoki';
+select * from sz;
+update sz set gy='körte' where gy is null; /*nullala sose jó*/
+
+update sz set gy='alma'; /*where nélkül minden sorra vonatkozik*/
+
+update emp set sal=sal+nvl(comm,0), comm=0;
+
+
+/*DELETE*/
+
+delete from sz where n='Micimackó';
+
+/*delete sz kitörli a táblában lévõ adatokat, de a tábla szerkezete megmarad*/
+/*drop table: teljes egészében eltûnik a tábla, nem tudjuk a szerkezetét*/
+
+create table zs (n varchar(15),gy varchar(15)); /*nchar,nvarchar2-ékezetes karakterekre*/
+insert into zs (n) values ('Köszönöm szépen');/*az ékezetes karakterek nem 1 byteosak*/
+insert into zs (n) values ('Köszönöm sz');
+select * from zs;
+rollback;
+select * from zs;
+
+select * from branyi.sz;
+
+alter table sz add(x number default 10);
+alter table sz add(y number);
+insert into sz values ('a','b',100,0); /*Ha nullhoz ragaszkodom, a default éerték nem írhatja felül*/
+insert into sz values ('a','b',100,null); /*Ha nullhoz ragaszkodom, a default éerték nem írhatja felül*/
+select * from sz;
+
+
+/*VIEW*/
+
+select * from user_objects;
+
+CREATE OR REPLACE FORCE VIEW NEVEK AS
+select n from sz;
+select * from nevek;
+
+
+/*Lehet view táblánál insertet haszmálni? */
+/*Attól függ, itt igen: */
+insert into nevek values ('Akárki');
+
+/*Bevittük a Zelefántot, de nem látjuk. Viewbe be lehet rakni egy adatot, de vissza nem jön. */
+select * from almatszeretok; 
+insert into sz values('Zelefánt','banán','1','2');
+select * from sz;
+
+/*Ha 2 adatot szeretnénk bevinni 8 oszlopra, ahol 2 nem lehet üres. Ha nincs default, akkor null lesz, ami hamis, így nem lehet bevinni. *
+Ha egy megszorítást megsértünk, akkor nem tudok bevinni, vagy ha olyat szeretnék ami már van. !!!*/
+
+/*Számolt oszlopot sem lehet feltölteni. !!!*/
+/*Ha nincs megadva az INSERT jog !!!*/
+
+/*PROGRAMOZÁS*/
+/*Felhasználói változó*/
+select * from &a; /*megkérdezi, használja, elfelejti*/
+select * from &&a; /*&& megjegyzi az a-nak írt étéket*/
+/*a-t elhasználtuk, kell új*/
+select * from &b;
+select * from &&b;
+
+define
+undefine a /*a-ra megjegyzett értéket elveszi tõle*/
+undef b; /*undef <=> undefined, csak rövidebb*/
+
+accept a prompt 'Kérem a tábla nevét'
+select '&a' from dual;
+accept a prompt 'Kérem a tábla nevét! ' hide
+select '&a' from dual; /*macskaköröm nélkül változót keres*/
+
+/*Környezeti változó*/
+
+var a char
+begin
+:a :='1';
+end;
+
+/
+print a
+
+set serveroutput on /*látható kiírásokért*/
+
+begin
+dbms_output.put_line('szia'); /*csak az oracleben*/ /*szerveren fut*/
+end;
+
+/*GYAK 11 2017-05-08*/
+/*----------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PLSQL:
+adattípusok: (újak): BOOLEAN; %TYPE; %ROWTYPE
+GOTO: end utasításra nem tud ugrani: 
+
+BEGIN GOTO címke
+<<cimke>>
+END;
+
+helyett
+
+
+BEGIN GOTO címke
+<<cimke>>
+NULL;
+END;
+--------
+
+x:=5
+vagy
+SELECT 5 INTO x FROM DUAL;
+
+SELECT INTO nékül=> tuti hiba
+
+Vizsga: A legfiatalabb vizsgálata (pl)!!!
+CASE: utasítás vagy fv közti különbség: 
+fv-nél csak END szó van a végén, utasításnál END CASE; 
+
+
+
+*/
+set serveroutput on
+<<cimke1>>
+DECLARE
+  a  NUMBER;
+BEGIN
+  a:=2;
+  <<cimke2>>
+  DECLARE
+    a number;
+  BEGIN
+    a:=4;
+    dbms_output.put_line(a);
+    dbms_output.put_line(cimke1.a);
+    dbms_output.put_line(cimke2.a);
+  END;
+  dbms_output.put_line(a);
+END;
+/
+
+/*------------------------------------------*/
+
+set serveroutput on
+
+declare
+  a number default 0 /*<=> a number := 0 */; b number default 0; c number default 0;
+  x emp.sal%type;
+cursor k is select sal from SILA.EMP;
+begin
+open k;
+loop
+  fetch k into x; /*beolvasunk k-ból az x-be. Mi az x? x emp.sal%type;*/
+  exit when k%notfound; /*ha igaz, akkor nem sikerült adatot beolvasni, lépjünk ki a ciklusból*/
+  if x<1500 then a:=a+1;
+  elsif x<3000 then b:=b+1;
+  else c:=c+1;
+  end if;
+end loop;
+dbms_output.put_line('a='||/*to_char(a) helyett elég sima a, az oracle tudja*/a||' b='||b||' c='||c); /*Liíratjuk a,b,c értékét*/
+/* || konkatenáció; + jelnés szöveget numerikussá konvertál pl: '5'+a eredménye 11 lenne */
+close k;
+end;
+/
+
+
+
+/*-----------------*/
+
+
+declare
+a number default 0; b number default 0; c number default 0;
+cursor k is select * from SILA.EMP;
+begin
+for sor in k loop
+if sor.sal<1500 then a:=a+1;
+elsif sor.sal<3000 then b:=b+1;
+else c:=c+1;
+end if;
+end loop;
+dbms_output.put_line('a='||a||' b='||b||' c='||c);
+
+end;
+/
+show error
+
+
+/*-----------------*/
+
+accept m prompt 'Foglalkozás' 
+/*felhasználói változó*/
+
+DECLARE
+      V_EMP emp%ROWTYPE;
+      N1 NUMBER :=0; N2 NUMBER :=0;
+      /*kurzor paraméter; CHAR(10) mindig 10 betû, ha nem, akkor szóközökkel tölti ki
+      CHAR itt bármilyen hosszú*/
+      CURSOR c1(pjob CHAR)  IS SELECT *  FROM SILA.EMP WHERE job=pjob ;
+BEGIN
+      OPEN c1('&M') ; /*M nevû változó értéke: */
+      DBMS_OUTPUT.PUT_LINE('M = '||'&M');
+      LOOP
+      	FETCH c1 INTO  V_EMP;
+      	EXIT WHEN C1%NOTFOUND;
+      	IF V_EMP.SAL< &HATAR THEN
+      		N1:=N1+1; 
+	ELSE
+      		N2:=N2+1 ;
+      	END IF;
+      END LOOP;
+      DBMS_OUTPUT.PUT_LINE('KISEBB = '||N1);
+      DBMS_OUTPUT.PUT_LINE('NAGYOBB ='||N2);
+      CLOSE c1;
+END;
+/
+select &m from dual; /*változó lesz az m-nek beírt pl: salesman*/
+select '&m' from dual; /*a szöveg, amit ki kell írni*/
+
+/*eljárás; fv: különbség: a fv egyel több értékkle tér vissza mint az eljárás,
+általánosan. */
+
+
+/*-------------------*/
+
+Accept m prompt 'foglalkozas'
+
+Declare
+x varchar2(20);
+function atlag(fogl in varchar) return number
+  is
+  eredm number;
+  begin
+  select avg(sal) into eredm from SILA.EMP where job=fogl;
+  return eredm;
+end;
+
+begin
+x:='&m';
+dbms_output.put_line(x||' foglalkozas atlagfizetese: '||atlag(x));
+end;
+/
+select avg(sal) from emp where job='SALESMAN';
+
+
+
+/*--------------------*/
+
+Accept m prompt 'foglalkozas'
+
+Declare
+x varchar2(20);
+function atlag(fogl in out varchar) return number
+is
+eredm number;
+begin
+select avg(sal) into eredm from SILA.EMP where job=fogl;
+case fogl
+when 'SALESMAN' then fogl:='üzletkötõ';
+when 'PRESIDENT' then fogl:='elnök';
+when 'CLERK' then fogl:='titkár';
+else fogl:='egyéb';
+end case;
+return eredm;
+end;
+
+begin
+x:='&m';
+dbms_output.put_line(x||' foglalkozas atlagfizetese: '||atlag(x));
+end;
+/
+/*in out varschar: out miatt megváltoztatható az érték*/
+
+/* csak SORFV használható a where feltételben*/
+
+
+/*ea 09: doc--- */
+
+/*INSERT 2 fajtája: VALUES: 1 sor*
+: SELECT vagy akárhány sor /
+
+****************************************ADATBÁZISOK2**************************************************************************************************************************************************************************************************************************************************ADATBÁZISOK2***********************************************************************************************ADATBÁZISOK2******************************************************ADATBÁZISOK2*******************************ADATBÁZISOK2****************************************************************************************************************************************************************************************************************************************ADATBÁZISOK2*****************************************************************ADATBÁZISOK2*******************************************************************************************************
+
+
+
+
+
+
+
+
+
+
+/*instr(hol keressen;mit keressen; )*/
+
+accept x
+select tld, nev,instr((select orszagok from nikovits.folyok where nev='&x'),tld) from branyi.vilag_orszagai
+where instr((select orszagok from nikovits.folyok where nev='&x'),tld)>0 order by 1;
+
+select nev,orszagok from nikovits.folyok;
+
+/*************************************************************************/
+
+
+select * from user_objects;
+select * from dba_objects; -- mindenkire vonatkozó
+
+select * from all_objects;
+
+select * from dba_objects where owner='BRANYI';
+select * from Dba_Objects where owner='BRANYI'; /* a ketto ua */ 
+
+select * from all_objects where owner='BRANYI'; 
+
+
+select * from all_objects where object_name='X'; //
+select * from dba_objects where object_name='x'; //
+
+
+select * from dba_objects where object_name='DBA_TABLES' and OBJECT_TYPE='VIEW';
+Select * from dba_objects where object_name='DUAL' and object_type='TABLE';
+
+
+
+
+
+/**/
+create table x(a number);
+select * from x;
+select * from X;
+select * from "X";
+/**/
+create table "x" (a number);
+
+
+/*1. Kinek a tulajdonában van a DBA_TABLES nevu nézet (illetve a DUAL nevu tábla)?*/
+
+select * from dba_objects where object_name='DBA_TABLES' and object_type='VIEW';
+/*Jó válasz: */ select owner from dba_objects where object_name='DBA_TABLES' and object_type='VIEW';
+/*DUAL:*/
+
+select * from dba_objects where object_name='DUAL' and object_type='TABLE';
+
+select 1+1 from dual;
+
+/*Dual: tábla, aminek 1 sora van*/
+select 1+1 from x;
+select 1+1 from "x";
+/*Egy saját dual létrehozása esetén a (select 1+1 from dual) a saját létrehozott táblát használja és mivel 0 soros, nem ír ki semmit*/
+select * from sz;
+select 1+1 from sz;
+
+select 1+1 from sys.dual;
+select 1+1 from v6rkh9.dual;
+
+
+select * from dba_objects where OBJECT_NAME='DBA_TABLES' and object_type='SYNONYM'; 
+
+select * from BRANYI.emp;
+select * from NIKOVITS.dept;
+select * from sila.dept;
+
+
+
+/*2. Kinek a tulajdonában van a DBA_TABLES nevu szinonima (illetve a DUAL nevu)?
+(Az iménti két lekérdezés megmagyarázza, hogy miért tudjuk elérni oket.)*/
+select * from dba_objects where object_name='DBA_TABLES' and object_type='SYNONYM';
+/*Ha nincs saját dual, akkor a public tulajdonában lévo dualt látjuk, ami hozzáfárési engedély a sys dual táblájához. 
+A puclic szinoníma. A publikot helybol látjuk, ha enm takarja le valami, pl az általunk létrehozott saját dual tábla*/
+
+
+select * from dba_synonyms where synonym_name='DUAL';
+select * from dba_synonyms;
+
+select owner from dba_objects group by owner having count( distinct object_type)>10;
+
+/* 3 Milyen típusú objektumai vannak az orauser nevu felhasználónak az adatbázisban?*/
+select distinct object_type from dba_objects where owner='ORAUSER';
+/* 4 Hány különbözo típusú objektum van nyilvántartva az adatbázisban?*/
+select count(distinct object_type) from dba_objects;
+select distinct object_type from dba_objects;
+
+
+/* 5 Kik azok a felhasználók, akiknek több mint 10 féle objektumuk van?*/
+
+select * from dba_objects;
+
+select owner,count(distinct object_type) as db from dba_objects group by owner having count(distinct object_type)>10;
+
+select owner,count(*) as db from dba_objects group by owner ;
+/*(*)-ot csak counttal*/
+/*select és a group közé kell, ami alapján csoportosítuink*/
+
+/*(select owner from dba_objects where object_type='VIEW')
+ EXCEPT
+(select owner from dba_objects where object_type='TRIGGER');*/--hibás ... ??? 
+
+
+/*
+Kik azok a felhasználók, akiknek van triggere és nézete is?*/
+
+select * from dba_objects where object_type='TRIGGER';
+
+/*Kik azok a felhasználók, akiknek van nézete, de nincs triggere?*/
+select owner from dba_objects where object_type='VIEW' 
+minus 
+select owner from dba_objects where  object_type='TRIGGER';
+
+/*SQL-ben a kivonás muvelete: Attól függ...
+: egyik a minus
+: másik except (szabvány szerint)
+*/
+
+/**********************************************************************************************************************************************************************
+//Gyakorlat 2 (09.19)
+
+
+/*Kik azok a felhasználók, akiknek több mint 40 táblájuk, de maximum 37 indexük van?*/
+
+select owner, count(*) from dba_objects where object_type='TABLE' group by owner having count(*)>40 order by count(*) desc;
+
+select owner, count(*) from dba_objects where object_type='INDEX' group by owner having count(*)<=37 ; /* kevesebb mint 37 index*/
+
+
+
+/*MO::: */
+
+select owner, count(*) from dba_objects where object_type='TABLE' group by owner having count(*)>40 
+intersect
+(
+(select owner, count(*) from dba_objects where object_type='INDEX' group by owner having count(*)<=37)
+union
+(select owner from dba_objects 
+minus 
+select owner from dba_objects where object_type='INDEX')
+);
+/******************************************************************************/
+select owner, count(*) from dba_objects where object_type='TABLE' group by owner having count(*)>40 
+minus
+select owner, count(*) from dba_objects where object_type='INDEX' group by owner having count(*)<=37; 
+
+
+/*ÚJABB RENSZERTÁBLA:::: DBA_TAB_COLUMNS*/
+select * from nikovits.emp;
+
+SELECT * FROM DBA_TAB_COLUMNS; /* összes ember összes táblájának összes oszlopa*/
+select * from DBA_TAB_COLUMNS where owner='NIKOVITS' and table_name='EMP';
+-- nikovits.emp; /*yes-kötelezo*/
+/*DBA_TAB_COLUMNS yes-nem kötelezo*/
+
+desc nikovits.emp;
+/*number(7,2) : 7 jegyu szám 2 tizedes*/
+
+
+select table_name, data_type from dba_tab_columns where data_type='DATE';
+select  table_name, count(*) from dba_tab_columns where data_type='DATE' group by table_name, owner having count(*)>8;
+
+
+select * from dba_tab_columns;
+/*
+Hány oszlopa van a nikovits.emp táblának?*/
+select count(*) from DBA_TAB_COLUMNS where owner='NIKOVITS' and table_name='EMP';
+
+/*Milyen típusú a nikovits.emp tábla 6. oszlopa?*/
+select data_type from DBA_TAB_COLUMNS where owner='NIKOVITS' and table_name='EMP' and COLUMN_ID=6;
+
+/*Adjuk meg azoknak a tábláknak a tulajdonosát és nevét, amelyeknek van 'Z' betuvel kezdodo oszlopa.*/
+
+select OWNER,TABLE_NAME from DBA_TAB_COLUMNS where COLUMN_NAME like 'Z%';
+
+/*
+Adjuk meg azoknak a tábláknak a nevét, amelyeknek legalább 8 darab dátum tipusú oszlopa van.*/
+select * from DBA_TAB_COLUMNS where owner='NIKOVITS' and table_name='EMP';
+/*count nincs where-ben ->having amihez meg csoportosítani kell*/
+select table_name from DBA_TAB_COLUMNS where data_type='DATE' Group by table_name having count(*)>=8; /*több ember összedobta*/
+
+select table_name, count(*) from DBA_TAB_COLUMNS where data_type='DATE' Group by table_name, owner having count(*)>=8; /*kell az owner, hogy emberenként nézze*/
+
+desc WWV_FLOW_WORKSHEET_ROWS;
+
+
+select distinct table_name from DBA_TAB_COLUMNS 
+where data_type='DATE' Group by owner, table_name having count(*)>=8; /*kell az owner, hogy emberenként nézze*/
+
+select owner,table_name from DBA_TAB_COLUMNS where column_id='1' and DATA_TYPE='VARCHAR2'
+intersect
+select owner, table_name from DBA_TAB_COLUMNS where column_id='4' and DATA_TYPE='VARCHAR2';
+
+select * from DBA_TAB_COLUMNS;
+
+
+
+
+
+/*Adjuk meg azoknak a tábláknak a nevét, amelyeknek 1. es 4. oszlopa is VARCHAR2 tipusú.*/
+
+select table_name from DBA_TAB_COLUMNS where column_id=1 and data_type='VARCHAR2' intersect
+select table_name from DBA_TAB_COLUMNS where column_id=4 and data_type='VARCHAR2'; /*pl: SÖR tábla nem jó*/
+
+select owner, table_name from DBA_TAB_COLUMNS where column_id=1 and data_type='VARCHAR2' intersect
+select owner, table_name from DBA_TAB_COLUMNS where column_id=4 and data_type='VARCHAR2'; /*KELL: owner*/
+
+select * from dba_objects where object_name='SÖR';
+
+
+/*************************************************2. FELADATSOR*********************************************************************/
+--SYNONYM
+create synonym n for nikovits.emp;
+select * from n;
+select * from dba_synonyms;
+select * from SYS.USER_SYNONYMS;
+create synonym d for dual;
+select * from d;
+select 1+1 from d;
+
+select * from dba_synonyms where owner='PUBLIC' and SYNONYM_NAME='DUAL';
+
+create view sz as select * from nikovits.szeret; 
+select * from sz;
+                                                                    /******/
+create view nevsor as select nev from sila.szeret;
+create view nevsor2 as select distinct nev from sila.szeret;
+select * from nevsor;
+select * from nevsor2;
+insert into nevsor values('Zelefant'); /*nincs jogosultság sila.szeret táblához*/
+/*Van jog, de mégsem lehet bevinni: ha nem lehet NULL érték; ha egy megszorítás megakadályozza [megszorítás]*/
+
+create or replace view f as select sal*deptno x from sila.emp;
+select * from f;
+insert into f values('Zelefánt',10000); /*nem*/
+
+create view minden as select * from sila.emp natural join sila.dept;
+
+select * from minden; /*deptno 2 táblában van, nem vihetünk fel új adatot*/
+
+select * from user_views;
+
+select * from SYS.DBA_VIEWS;
+select * from dba_views;
+
+/*SEQUENCES  --- DBA_SEQUENCES*/
+
+create sequence q 
+start with 10
+increment by 5--hanyasával
+nocycle
+nocache;
+
+create sequence p
+start with 7
+increment by 1
+nocycle
+nocache;
+
+select p.nextval from dual; -- elõbb ez kell, hogy meglegyen az "elsõ" elem vagyis a start elem, a 7
+--currval enélkül még nem mûködik
+select p.currval from dual; -- jelenlegi
+
+select q from dual; --nem 
+select q.currval from dual;
+select q.nextval from dual; -- add meg a következot
+
+select * from X;
+
+insert into X values(q.nextval);
+insert into X values(q.currval);
+
+select * from SYS.USER_SEQUENCES;
+select * from SYS.DBA_SEQUENCES;
+
+
+
+/***********************************GYAK3 ARAMISON FOLYT****************************************************/ 
+
+select * from dba_data_files;/*milyen fileokból áll az adatbázis*/
+/*user_data_files- NINCS, nem tudok fileokat tárolni*/
+select * from DBA_TEMP_FILES;
+select * from DBA_TABLESPACES;/*táblaterek*/
+select * from DBA_SEGMENTS;
+select * from user_SEGMENTS;
+
+select * from dba_db_links;
+select * from user_db_links;
+
+select * from DBA_EXTENTS;
+select * from user_EXTENTS;
+
+select * from dba_tables;
+select * from user_tables;
+
+
+/*GYAKORLAT4*/
+
+select * from nikovits.vilag_orszagai where
+(select orszagok from nikovits.folyok where nev='Mekong') like '&'||tld||'&';
+
+
+/*ab2_feladat2.txt--> Nikovits; kövi hétre : ilyen jellegu feladatok a ZH-ban*/
+select * from dba_tables;
+select * from user_tables; /*partitioned: yes: szét van vágva a tábla; nem tudjuk melyik táblatéren van*/
+/*Melyik táblatéren van a NIKOVITS felhasználó ELADASOK táblája? (Miért lesz null?): több kicsi részbol fog állni, nem tudjuk találni 
+dba_table-ben nikovits felhasználó 
+
+*/
+
+select * from sila.szeret; 
+--http://people.inf.elte.hu/branyi/ora/gyak2/t03/abterv_feladatok3.txt
+--select rownum, * from sila.szeret; -- * nélkül muködik, de a kettot együtt szeretnénk (sorszám és az összes oszlop tartalmának kiíratása)
+--fárasztó lenne az összes oszlop kiírása (* mellé semmit sem lehet írni, akkor mégis hogy lehet mégis rávenni? MO: szeret.*)
+--rownum: nem része a sila.szeret táblának, mégis ki lehet íratni
+--MO: select rownum, szeret.* from sila.szeret;
+--rowid: minden oszlop mellé ez is kérheto (nem a tábla része, mégis kérheto): 18 jegyu számot ad 
+--számrendszer: elterjedt, napi használat: 157.181.6284 (157.181: ELTE-s gépek) (62: gépterem) (84:gép) :: 256-os számrendszer
+--216.58.209.163: GOOGLE 256-os számrendszerben
+--216*256^3+58*256^2+209*256+163: GOOGLE  10-es számrendszerben
+-- 192.168-al kezdodo gépeink száma max: 65000 gép kezelheto; Több esetvén: 10-esell kezdük és utána a 3 szám
+--16-os számrendszer: 0-9 ; A-F
+--64-es számrendszer: 64 db számjegy ; magyarázat--> branyi gyak2:feladatok 3
+
+
+select rowid, szeret.* from sila.szeret;
+--elso 6 számjegy: AABHsY <=> 293 656-os objektum (meghatározza az objektum azonosítóját): dba_objects megadja az összes objektum azonosítóját
+select * from dba_objects;
+--AAE (dba_data_files; file_id)
+select * from dba_data_files;
+--milyen hosszú lehet egy fájl(állomány) 1 blokk: 8kilobájt
+--64 kilobájt*blokkok száma*fileok száma; ekkora tárterületet tud kezelni
+--utolsó 3 számjegy: blokkon belül hol helyezkedik el az adott sor [select rowid, szeret.* from sila.szeret;] -- sorok száma visszafele no
+
+select * from nikovits.cikk;
+/*FF: 
+A NIKOVITS felhasználó CIKK táblája hány blokkot foglal le az adatbázisban?
+(Vagyis hány olyan blokk van, ami ehhez a táblához van rendelve és így
+azok már más táblákhoz nem adhatók hozzá?)
+
+--MO vázlat: több válasz is van; kérdés melyik mire jó
+
+A NIKOVITS felhasználó CIKK táblájának adatai hány blokkban helyezkednek el?
+(Vagyis a tábla sorai ténylegesen hány blokkban vannak tárolva?)
+!!! -> Ez a kérdés nem ugyanaz mint az elozo.*/
+
+
+select blocks from dba_tables where owner='NIKOVITS' and table_name='CIKK'; --egyikre se jó a válasz
+select rowid,cikk.* from nikovits.cikk; --utolsó 3 elotti részt csak kiíratni. 
+
+select substr(rowid,10,6) from nikovits.cikk;
+select distinct substr(rowid,10,6) from nikovits.cikk;
+select count(distinct substr(rowid,10,6)) from nikovits.cikk; -- 2. kérdésre a válasz; 1000 adat melyik blokkban helyzkedik el? 
+
+--objektum, amelyik tartalmaz adatot: Honnan tudjuk, hogy mennyi helyet foglal el ez az objektum? 
+/*select * from DBA_EXTENTS;
+select * from DBA_SEGMENTS where owner='NIKOVITS' and SEGMENTS_NAME='CIKK' and SEGMENTS_TYPE='TABLE';
+select * from user_SEGMENTS;---rossz*/
+select * from DBA_SEGMENTS where owner='NIKOVITS' and SEGMENT_NAME='CIKK' and SEGMENT_TYPE='TABLE';
+select * from user_SEGMENTS;
+--1-1 blokkban hány sor van? 
+select substr(rowid,10,6),count(*) from nikovits.cikk group by substr(rowid,10,6);
+
+
+select substr(rowid,10,6) from nikovits.cikk;
+select rowid,cikk.* from nikovits.cikk;
+--Objektum: lehet partitioned, nem jó a mo (FFF megváltozott közben)
+
+--MO:
+select substr(rowid,1,15) from nikovits.cikk; -- figyelembe veszi, hogy hanyag fileban van
+select substr(rowid,1,15), count(*) from nikovits.cikk group by substr(rowid,1,15); -- jó megoldás (KÉRDÉS:Az egyes blokkokban hány sor van?)
+
+
+/*Hozunk létre egy táblát az EXAMPLE táblatéren, amelynek szerkezete azonos a nikovits.cikk 
+tábláéval és pontosan 128 KB helyet foglal az adatbázisban. Foglaljunk le manuálisan egy 
+újabb 128 KB-os extenst a táblához.*/
+select * from nikovits.cikk;
+
+drop table cikkt;
+CREATE TABLE cikkt
+tablespace example
+as select * from nikovits.cikk where 0=1; -- kell a feltétel, hogy ne lemásolja a táblát
+--megszorításokat pótolni kell
+
+select * from cikkt;
+
+select * from user_tables;
+select * from user_segments; --ures tábla nincs benne
+select * from user_objects;
+
+insert into cikkt values(1,'x','szin',2);
+desc cikkt;
+
+--MOST kell: ne 64-et hanem 128:: storage initial
+CREATE TABLE cikkt
+tablespace example
+storage (initial 128K)
+as select * from nikovits.cikk where 0=1;
+
+--Foglaljunk le még 128-at: (utólagos foglalás): ALTER TABLE
+
+alter table cikkt allocate extent (size 128);
+
+--+ PLSQL programmal feltölteni??? 
+
+
+/*GYAK 6- 2017.10.17*/
+
+
+
+
+
+/*B+ fa index
+-----------
+Az alábbi feladatban a tankönyben leírt és az eloadáson is bemutatott algoritmussal 
+építsünk fel egy B+ fát!
+
+Tegyük fel, hogy egy B+ fa blokkjaiba 3 kulcs fér el plusz 4 mutató. A kulcsok 
+különbözoek. Szúrjuk be a B+ fába az alábbi kulcsértékeket a megadott sorrendben:
+39,15,50,70,79,83,72,43,75,45
+Adjuk meg a B+ fa minden olyan állapotát, amikor egy csomópont kettéosztására volt szükség.
+Például, az elso kettéosztás utáni állapot:
+                          50
+                    15|39    50|70
+
+Egy kis segítség:
+----------------
+
+Levél csúcs kettéosztásakor minden kulcsot megorzünk a régi és az új (szomszédos) csúcsban.
+1 új kulcs-mutató párt küldünk felfelé a szülo csúcsba, amit ott kell elhelyezni.
+
+Belso csúcs kettéosztásakor (N,M csúcsra) a mutatók elso fele az N-be kerül, a második az M-be.
+A kulcsok elso fele az N-be kerül a második fele az M-be, de középen kimarad egy kulcs,
+ami az M-en keresztül (elso gyermekén keresztül) elérheto legkisebb kulcsot tartalmazza. 
+Ez nem kerül sem N-be, sem M-be, hanem ez megy fölfelé N és M közös szülojébe az M-re mutató
+mutatóval együtt.
+
+
+Bitmap index
+------------
+
+DKOD DNEV   FIZETES  FOGLALKOZAS  BELEPES  OAZON
+---------------------------------------------------
+1    SMITH     800   CLERK        1980     20   
+2    ALLEN    1600   SALESMAN     1981     30	   
+3    WARD     1250   SALESMAN     1981     30	   
+4    JONES    2975   MANAGER      1981     20	   
+5    MARTIN   1250   SALESMAN     1981     30	   
+6    BLAKE    2850   MANAGER      1981     30	   
+7    CLARK    2450   MANAGER      1981     10	   
+8    SCOTT    3000   ANALYST      1982     20	   
+9    KING     5000   PRESIDENT    1981     10	   
+10   TURNER   1500   SALESMAN     1981     30	   
+11   ADAMS    1100   CLERK        1983     20	   
+12   JAMES     950   CLERK        1981     30	   
+13   FORD     3000   ANALYST      1981     20	   
+14   MILLER   1300   CLERK        1982     10	 
+
+
+Készítsen bitmap indexet a dolgozó tábla OAZON oszlopára és adja meg a bitvektorokat.
+
+Tegyük fel, hogy a FOGLALKOZAS, a BELEPES és az OAZON oszlopokra létezik bitmap index (3 index).
+Készítsük el az alábbi lekérdezésekhez szükséges bitvektorokat, majd végezzük el rajtuk a szükséges 
+muveleteket, és adjuk meg azt az eloállt bitvektort, ami alapján a végeredmény sorok megkaphatók.
+Ellenorzésképpen adjuk meg a lekérdezést SQL-ben is.
+ 
+- Adjuk meg azoknak a dolgozóknak a nevét, akik 1981-ben léptek be és a foglalkozásuk hivatalnok (CLERK),
+  vagy a 20-as osztályon dolgoznak és a foglalkozásuk MANAGER.
+
+- Adjuk meg azoknak a dolgozóknak a nevét, akik nem 1981-ben léptek be és a 10-es vagy a 30-as 
+  osztályon dolgoznak.
+
+Tömörítse a következo bitvektort a szakaszhossz kódolással. (lásd UW_szakaszhossz_kodolas.doc)
+0000000000000000000000010000000101
+
+Fejtsük vissza a következo, szakaszhossz kódolással tömörített bitvektort:
+1111010101001011
+
+
+
+Oracle indexek  
+--------------
+(DBA_INDEXES, DBA_IND_COLUMNS, DBA_IND_EXPRESSIONS)
+
+Hozzunk létre egy vagy több táblához több különbözo indexet, legyen köztük több oszlopos,
+csökkeno sorrendu, bitmap, függvény alapú stb. (Ehhez használhatók az ab2_oracle.doc
+állományban szereplo példák, vagy a cr_index.txt-ben szereplok.)
+Az alábbi lekérdezésekkel megállapítjuk az iménti indexeknek mindenféle tulajdonságait a 
+katalógusokból.
+
+Adjuk meg azoknak a tábláknak a nevét, amelyeknek van csökkeno sorrendben indexelt oszlopa.
+--------------------------------------------------------------------------------
+SELECT * FROM dba_ind_columns WHERE descend='DESC' AND index_owner='NIKOVITS';
+
+Miért ilyen furcsa az oszlopnév?
+-> lásd DBA_IND_EXPRESSIONS
+
+Adjuk meg azoknak az indexeknek a nevét, amelyek legalább 9 oszloposak.
+(Vagyis a táblának legalább 9 oszlopát vagy egyéb kifejezését indexelik.)
+--------------------------------------------------------------------------------
+SELECT index_owner, index_name FROM dba_ind_columns 
+GROUP BY index_owner, index_name HAVING count(*) >=9;
+
+Adjuk meg az SH.SALES táblára létrehozott bitmap indexek nevét.
+--------------------------------------------------------------------------------
+SELECT index_name FROM dba_indexes 
+WHERE table_owner='SH' AND table_name='SALES' AND index_type='BITMAP';
+
+Adjuk meg azon kétoszlopos indexek nevét és tulajdonosát, amelyeknek legalább 
+az egyik kifejezése függvény alapú .
+--------------------------------------------------------------------------------
+SELECT index_owner, index_name FROM dba_ind_columns 
+GROUP BY index_owner, index_name HAVING count(*) >=2
+ INTERSECT
+SELECT index_owner, index_name FROM dba_ind_expressions;
+
+Adjuk meg az egyikükre, pl. az OE tulajdonában lévore, hogy milyen kifejezések szerint 
+vannak indexelve a soraik. (Vagyis mi a függveny, ami alapján a bejegyzések készülnek.)
+--------------------------------------------------------------------------------
+SELECT * FROM dba_ind_expressions WHERE index_owner='OE';
+
+Adjuk meg a NIKOVITS felhasználó tulajdonában levo index-szervezett táblák nevét.
+(Melyik táblatéren vannak ezek a táblák? -> miért nem látható?)
+--------------------------------------------------------------------------------
+SELECT owner, table_name, iot_name, iot_type FROM dba_tables 
+WHERE owner='NIKOVITS' AND iot_type = 'IOT';
+
+Adjuk meg a fenti táblák index részét, és azt, hogy ezek az index részek (szegmensek) 
+melyik táblatéren vannak?
+--------------------------------------------------------------------------------
+SELECT table_name, index_name, index_type, tablespace_name FROM dba_indexes 
+WHERE table_owner='NIKOVITS' AND index_type LIKE '%IOT%TOP%';
+
+Keressük meg a szegmensek között az elozo táblákat illetve indexeket, és adjuk
+meg a méretüket.
+--------------------------------------------------------------------------------
+SELECT table_name, index_name, index_type, s.bytes
+FROM dba_indexes i, dba_segments s 
+WHERE i.table_owner='NIKOVITS' AND i.index_type LIKE '%IOT%TOP%'
+AND i.index_name=s.segment_name AND s.owner='NIKOVITS';
+
+Keressük meg az adatbázis objektumok között a fenti táblákat és indexeket, és adjuk
+meg az objektum azonosítójukat és adatobjektum azonosítójukat (DATA_OBJECT_ID).
+
+Adjuk meg a fenti táblák túlcsordulási részeit (ha van).
+--------------------------------------------------------------------------------
+SELECT owner, table_name, iot_name, iot_type FROM dba_tables 
+WHERE owner='NIKOVITS' AND iot_type = 'IOT_OVERFLOW';
+
+Keressük meg a túlcsordulási részeket a szegmensek között és adjuk meg a méretüket.
+--------------------------------------------------------------------------------
+SELECT t.owner, t.table_name, t.iot_name, t.iot_type, s.bytes 
+FROM dba_tables t, dba_segments s
+WHERE t.owner='NIKOVITS' AND t.iot_type = 'IOT_OVERFLOW'
+AND s.owner='NIKOVITS' AND s.segment_name=t.table_name;
+
+Keressük meg az objektum azonosítóikat és az adatobjektum azonosítóikat is.
+
+Írjunk meg egy plsql procedúrát, amelyik a paraméterül kapott index szervezett 
+tábláról kiírja a tábla méretét. 
+   PROCEDURE iot_meret(p_owner VARCHAR2, p_tabla VARCHAR2) 
+Vigyázzunk, mert a táblának lehet index és túlcsordulási szegmense is.
+
+Adjuk meg azokat az index szervezett táblákat, amelyeknek pontosan 
+1 dátum típusú oszlopa van.
+--------------------------------------------------------------------------------
+SELECT owner, table_name FROM dba_tables WHERE iot_type = 'IOT'
+ INTERSECT
+SELECT owner, table_name FROM dba_tab_columns
+WHERE data_type='DATE' GROUP BY owner, table_name
+HAVING count(*) = 1;
+
+Adjuk meg, hogy mennyi a blokkolási faktora (a blokkban lévo sorok átlagos száma) 
+a következo tábláknak. (Az üres blokkokat ne vegyük figyelembe.)
+NIKOVITS.CIKK, SH.CUSTOMERS*/
+
+
+
+--3-as feladatsor (Nikovits)
+
+/*Hozzunk létre egy táblát az EXAMPLE táblatéren, amelynek szerkezete azonos a nikovits.cikk 
+tábláéval és pontosan 128 KB helyet foglal az adatbázisban. Foglaljunk le manuálisan további 
+128 KB helyet a táblához. 
+
+Vigyünk fel sorokat addig, amig az elso blokk tele nem 
+lesz, és 1 további sora lesz még a táblának a második blokkban.
+(A felvitelt plsql programmal végezzük és ne kézzel, mert úgy kicsit sokáig tartana.)
+*/
+/*ha 2 blokkot használna a gép, álljon le*/
+
+-- INSERT: tnév VALUES -- egy sor bevitelére 
+-- INSERT tnév SELECT 
+--into valtozo (a select értéke kerüljön a változóba) 
+select * from nikovits.cikk;
+select count(distinct substr(rowid,10,6)) from cikkt;
+
+
+declare 
+db number;
+begin 
+
+for i in 1..1000 loop 
+insert into cikkt select * from nikovits.cikk where i=ckod;
+select count(distinct substr(rowid,10,6)) into db from cikkt;
+if db>1 then exit;
+end if;
+end loop;
+END;
+/
+
+
+select * from cikkt;
+
+/*4-es feladatsor__ NIKOVITS*/
+
+/*
+INDEX létrehozása: CREATE index ON (+ milyen táblában, milyen szempot alapján legyen)
+(lehet--bitmap;B+fa)
+
+*/
+--EGYSZERU NORMÁL INDEX
+
+create index cikksor on cikkt(ckod); --index ckod alapján a cikkt táblában
+--INDEX jó: adatokat megkeresni ; 
+select * from cikkt order by ckod;
+
+
+create index szinindex on cikkt(szin);
+select * from cikkt order by szin;
+
+create index szinvisszasor on cikkt(szin desc); --fv-szeru (SYS_NC00006--figyelmeztetés, másik "táblára mutat--> user_ind_expressions;" )
+create index sulyvissza on cikkt(szin,suly desc)
+
+create index szin2sor cikkt(substr(szin,2,1)); --szin 2. beture alapján rakja sorrendbe
+
+create index szin2sor cikkt(substr(szin,2,1)||substr(szin,5,1));
+--sin alapján is sorba lehet rakni 
+create index sinindexsuly cikkt(sin(suly));
+--indexek kiíratása
+select * from user_indexes order by index_type;
+select * from dba_indexes; -- ki csinált indexet
+
+select * from user_ind_columns; -- indexek oszlopa, hány szempontot adtunk ()-ben
+
+select * from user_ind_expressions; --mi volt a képlet ; csak a fv-esek jelennek meg
+
+
+
+
+Adjuk meg azoknak az indexeknek a nevét, amelyek legalább 9 oszloposak.
+(Vagyis a táblának legalább 9 oszlopát vagy egyéb kifejezését indexelik.)
+--------------------------------------------------------------------------------
+SELECT index_owner, index_name FROM dba_ind_columns 
+GROUP BY index_owner, index_name HAVING count(*) >=9;--költséges mo
+--mo 2:
+select distinct index_owner, index_name FROM dba_ind_columns where column_position>=9;
+
+
+Adjuk meg azoknak a tábláknak a nevét, amelyeknek van csökkeno sorrendben indexelt oszlopa.
+--------------------------------------------------------------------------------
+SELECT * FROM dba_ind_columns WHERE descend='DESC' AND index_owner='NIKOVITS';
+
+
+Adjuk meg az SH.SALES táblára létrehozott bitmap indexek nevét.
+--------------------------------------------------------------------------------
+SELECT index_name FROM dba_indexes 
+WHERE table_owner='SH' AND table_name='SALES' AND index_type='BITMAP';
+
+
+
+Adjuk meg azon kétoszlopos indexek nevét és tulajdonosát, amelyeknek legalább 
+az egyik kifejezése függvény alapú .
+--------------------------------------------------------------------------------
+SELECT index_owner, index_name FROM dba_ind_columns 
+GROUP BY index_owner, index_name HAVING count(*) >=2  -- 2 vagy annál több
+ INTERSECT
+SELECT index_owner, index_name FROM dba_ind_expressions;
+
+-- jó MO: 
+
+SELECT index_owner, index_name FROM dba_ind_columns 
+GROUP BY index_owner, index_name HAVING count(*) =2
+ INTERSECT
+SELECT index_owner, index_name FROM dba_ind_expressions;
+
+Adjuk meg az egyikükre, pl. az OE tulajdonában lévore, hogy milyen kifejezések szerint 
+vannak indexelve a soraik. (Vagyis mi a függveny, ami alapján a bejegyzések készülnek.)
+--------------------------------------------------------------------------------
+SELECT * FROM dba_ind_expressions WHERE index_owner='OE';
+
+
+************************************************************************************************
+************************************************
+************************************************
+
+
+Adjuk meg a NIKOVITS felhasználó tulajdonában levo index-szervezett táblák nevét.
+(Melyik táblatéren vannak ezek a táblák? -> miért nem látható?)
+--------------------------------------------------------------------------------
+SELECT owner, table_name, iot_name, iot_type FROM dba_tables 
+WHERE owner='NIKOVITS' AND iot_type = 'IOT';
+
+
+/*GYAK 7 -  2017-10-24*/
+--http://people.inf.elte.hu/nikovits/AB2/cr_part_table.txt
+drop table eladasok;
+drop table eladasok2;
+drop table eladasok3;
+drop table eladasok4;
+drop table eladasok5;
+
+-- Particionálás tartományok alapján
+CREATE TABLE eladasok (szla_szam   NUMBER(5), 
+                       szla_nev    CHAR(30), 
+                       mennyiseg   NUMBER(6), 
+                       het         INTEGER ) 
+PARTITION BY RANGE (het)  
+ (PARTITION negyedev1  VALUES LESS THAN (13) SEGMENT CREATION IMMEDIATE 
+    STORAGE(INITIAL 8K NEXT 8K) TABLESPACE users, 
+  PARTITION negyedev2  VALUES LESS THAN (26) SEGMENT CREATION IMMEDIATE 
+    STORAGE(INITIAL 8K NEXT 8K) TABLESPACE example, 
+  PARTITION negyedev3  VALUES LESS THAN (39) SEGMENT CREATION IMMEDIATE  
+    STORAGE(INITIAL 8K NEXT 8K) TABLESPACE users)
+;
+
+--RANGE: "tartomány"
+insert into eladasok values(100, 'Sport cikkek', 231, 2);
+insert into eladasok values(101, 'Irodai termekek', 1200, 3);
+insert into eladasok values(102, 'Eszkozok', 43, 4);
+insert into eladasok values(103, 'Gepek', 21, 6);
+insert into eladasok values(104, 'Butorok', 31, 7);
+insert into eladasok values(105, 'Ingatlan', 3, 8);
+insert into eladasok values(106, 'Szolgaltatasok', 200, 9);
+--hibát generál: 
+insert into eladasok values(107, 'Elelmiszer', 300, 40); -- ezt már nem tudja beszúrni, 40 > 39 
+
+--valamilyen szabály alapján képez 3 kupacot, mi nem tudjuk mi alapján
+--rábízzuk a gépre, kit tegyen hova
+-- Particionálás hash kulcs alapján
+--egyik mo arra, hogy minden adatot el tudunk rakni
+CREATE TABLE eladasok2 (szla_szam   NUMBER(5), 
+                        szla_nev    CHAR(30), 
+                        mennyiseg   NUMBER(6), 
+                        het         INTEGER ) 
+PARTITION BY HASH ( het )  
+   (PARTITION part1 TABLESPACE users, 
+    PARTITION part2 TABLESPACE example, 
+    PARTITION part3 TABLESPACE users )
+;
+
+
+
+insert into eladasok2 values(100, 'Sport cikkek', 231, 2);
+insert into eladasok2 values(101, 'Irodai termekek', 1200, 3);
+insert into eladasok2 values(102, 'Eszkozok', 43, 4);
+insert into eladasok2 values(103, 'Gepek', 21, 6);
+insert into eladasok2 values(104, 'Butorok', 31, 7);
+insert into eladasok2 values(105, 'Ingatlan', 3, 8);
+insert into eladasok2 values(106, 'Szolgaltatasok', 200, 9);
+insert into eladasok2 values(107, 'Elelmiszer', 300, 40); 
+
+
+
+-- Particionálás lista alapján
+
+CREATE TABLE eladasok3 (szla_szam   NUMBER(5), 
+                        szla_nev    CHAR(30), 
+                        mennyiseg   NUMBER(6), 
+                        het         INTEGER ) 
+PARTITION BY LIST ( het )  
+   (PARTITION part1 VALUES(1,2,3,4,5)   SEGMENT CREATION IMMEDIATE 
+      STORAGE(INITIAL 8K NEXT 8K) TABLESPACE users, 
+    PARTITION part2 VALUES(6,7,8,9)     SEGMENT CREATION IMMEDIATE 
+      STORAGE(INITIAL 8K NEXT 8K) TABLESPACE example, 
+    PARTITION part3 VALUES(10,11,12,13) SEGMENT CREATION IMMEDIATE 
+      STORAGE(INITIAL 8K NEXT 8K) TABLESPACE users ) -- ide sem tud beszúrni > 13-at
+;
+
+
+insert into eladasok3 values(100, 'Sport cikkek', 231, 2);
+insert into eladasok3 values(101, 'Irodai termekek', 1200, 3);
+insert into eladasok3 values(102, 'Eszkozok', 43, 4);
+insert into eladasok3 values(103, 'Gepek', 21, 6);
+insert into eladasok3 values(104, 'Butorok', 31, 7);
+insert into eladasok3 values(105, 'Ingatlan', 3, 8);
+insert into eladasok3 values(106, 'Szolgaltatasok', 200, 9);
+--ezen listák egyiképen sincs benne a 40-es
+insert into eladasok3 values(107, 'Elelmiszer', 300, 40); 
+
+
+
+-- Alparticiók létrehozása partición belül (range-en belül hash)
+--megyezeik az 1-vel, csak azon belül a mennyiség alapján még további 3 felé bontja. 
+CREATE TABLE eladasok4 (szla_szam   NUMBER(5), 
+                        szla_nev    CHAR(30), 
+                        mennyiseg   NUMBER(6), 
+                        het         INTEGER ) 
+PARTITION BY RANGE ( het )
+SUBPARTITION BY HASH (mennyiseg)
+SUBPARTITIONS 3  
+   (PARTITION negyedev1  VALUES LESS THAN  ( 13 )  SEGMENT CREATION IMMEDIATE 
+      STORAGE(INITIAL 8K NEXT 8K) TABLESPACE users, 
+    PARTITION negyedev2  VALUES LESS THAN  ( 26 )  SEGMENT CREATION IMMEDIATE 
+      STORAGE(INITIAL 8K NEXT 8K) TABLESPACE example, 
+    PARTITION negyedev3  VALUES LESS THAN  ( 39 )  SEGMENT CREATION IMMEDIATE
+      STORAGE(INITIAL 8K NEXT 8K) TABLESPACE users )
+;
+
+insert into eladasok4 values(100, 'Sport cikkek', 231, 2);
+insert into eladasok4 values(101, 'Irodai termekek', 120000, 3); --változtt érték ! 
+insert into eladasok4 values(102, 'Eszkozok', 43, 4);
+insert into eladasok4 values(103, 'Gepek', 21, 6);
+insert into eladasok4 values(104, 'Butorok', 31, 7);
+insert into eladasok4 values(105, 'Ingatlan', 3, 8);
+insert into eladasok4 values(106, 'Szolgaltatasok', 200, 9);
+insert into eladasok4 values(107, 'Elelmiszer', 300, 40); --gond: továbbra is (RANGE)
+
+
+
+-- Range-list alparticiók létrehozása minta alapján. Ez akkor hasznos ha nagyon sok
+-- partíció lenne, és így nem kell oket egyesével felsorolni
+-- mintára vonatkozó infók: DBA_SUBPARTITION_TEMPLATES
+--ne akadjon ki a gép: példa. Range(mennyiség alapján) maximumnál kisebb gondoskodik arról, hogy ne legyen probléma
+--hogy hova teszi az adatokat
+CREATE TABLE eladasok5 (szla_szam   NUMBER(5), 
+                        szla_nev    CHAR(30), 
+                        mennyiseg   NUMBER(6), 
+                        het         INTEGER ) 
+PARTITION BY RANGE ( mennyiseg )
+SUBPARTITION BY LIST (het)
+SUBPARTITION TEMPLATE
+  (SUBPARTITION lista VALUES(1,2,3,4,5), 
+  SUBPARTITION other VALUES(DEFAULT))--lista: default miatt nem akad ki
+    (PARTITION kicsi    VALUES LESS THAN  (100) SEGMENT CREATION IMMEDIATE
+       STORAGE(INITIAL 8K NEXT 8K) TABLESPACE users,
+     PARTITION kozepes  VALUES LESS THAN  (500) SEGMENT CREATION IMMEDIATE  
+       STORAGE(INITIAL 8K NEXT 8K) TABLESPACE example, 
+     PARTITION nagy     VALUES LESS THAN  (MAXVALUE) SEGMENT CREATION IMMEDIATE 
+       STORAGE(INITIAL 8K NEXT 8K) TABLESPACE users )
+;
+
+insert into eladasok5 values(100, 'Sport cikkek', 231, 2);
+insert into eladasok5 values(101, 'Irodai termekek', 120000, 3);
+insert into eladasok5 values(102, 'Eszkozok', 43, 4);
+insert into eladasok5 values(103, 'Gepek', 21, 6);
+insert into eladasok5 values(104, 'Butorok', 31, 7);
+insert into eladasok5 values(105, 'Ingatlan', 3, 8);
+insert into eladasok5 values(106, 'Szolgaltatasok', 200, 9);
+insert into eladasok5 values(107, 'Elelmiszer', 300, 40); --gond: továbbra is (RANGE)
+
+
+--típus, név, határok,hány felé van vágva, hova teszi a gép... lekérdezések
+
+select * from user_part_tables;
+select * from dba_part_tables; -- a tábla partícionált-e, partíció typusa, darabszámok
+
+select * from dba_tab_particions; -- vagy user; -- 
+select * from user_tab_particions; 
+
+select * from user_tab_subpartitions;
+--subpartitioning_type ha megadom, azt írja ki, ha nem adok nevet, akkor elnevezés a gép: "hülye név"
+--mit kell rande típussal vizsgálni?  ..... lekérdezés 
+select * from dba_PART_KEY_COLUMNS;
+
+
+--hol tárolja a gép az adatot? 
+--user segments-be ahol apartíciónak van neve, kikeressük. 
+--fopartíció van csak: (PARTICION)
+-- alpartíció: 9 darab részbe tárol (SUBPARTICION): teljes táblát ebbol kapjuk meg, nincs máshol adat tárolva
+select * from user_tables;
+select * from user_tables where table_name='ELADASOK5'; -- adatok alpartíciókban vannak, nem a táblákba, 9 alpartíció neve kéne, gép nem tudja oda betenni
+
+
+/*http://people.inf.elte.hu/nikovits/AB2/futas_tesztek.txt*/
+-- futásido: 35 sec 
+SELECT sum(darab) FROM nikovits.hivas, nikovits.kozpont, nikovits.primer
+WHERE hivas.kozp_azon_hivo=kozpont.kozp_azon AND kozpont.primer=primer.korzet
+AND primer.varos = 'Szentendre' 
+AND datum + 1 = next_day(to_date('2012.01.31', 'yyyy.mm.dd'),'hétfo');
+
+
+-- futásido: 1 sec
+-- változás: (+1) végére (-1)-nek 
+SELECT sum(darab) FROM nikovits.hivas, nikovits.kozpont, nikovits.primer
+WHERE hivas.kozp_azon_hivo=kozpont.kozp_azon AND kozpont.primer=primer.korzet
+AND primer.varos = 'Szentendre' 
+AND datum = next_day(to_date('2012.01.31', 'yyyy.mm.dd'),'hétfo') - 1;
+
+/*partícióra bontott adatok (dátum szerint)
+(+1): összes partíciót végginézi
+(-1): azonnal tudja a partíciót -> csak azt nézi át */
+
+select count(*) from nikovits.hivas, nikovits.kozpont, nikovits.primer;
+-- feladatok: http://people.inf.elte.hu/nikovits/AB2/ab2_feladat5_mo.txt
+/*Partícionálás
+-------------
+(DBA_PART_TABLES, DBA_PART_INDEXES, DBA_TAB_PARTITIONS, DBA_IND_PARTITIONS, 
+DBA_TAB_SUBPARTITIONS, DBA_IND_SUBPARTITIONS, DBA_PART_KEY_COLUMNS)
+
+
+Adjuk meg az SH felhasználó tulajdonában levo partícionált táblák nevét és a 
+particionálás típusát.
+---------------------------------------------------------------------------
+SELECT table_name, partitioning_type FROM dba_part_tables WHERE owner = 'SH';
+
+Soroljuk fel az SH.COSTS tábla partícióit valamint, hogy hány blokkot foglalnak
+az egyes partíciók. (Vigyázat! Egyes adatszótárak csak becsült méretet tartalmaznak.
+A pontos méreteket az extenseknél és szegmenseknél keressük.)
+---------------------------------------------------------------------------
+SELECT partition_name, blocks FROM dba_tab_partitions WHERE table_owner='SH' AND table_name='COSTS';
+
+SELECT segment_name, partition_name, blocks 
+FROM dba_segments WHERE owner='SH' AND segment_type='TABLE PARTITION' and segment_name='COSTS';
+
+Adjuk meg, hogy az SH.COSTS tábla mely oszlop(ok) szerint van particionálva.
+---------------------------------------------------------------------------
+SELECT column_name, column_position FROM dba_part_key_columns 
+WHERE owner='SH' AND name='COSTS' AND object_type='TABLE';
+
+Adjuk meg, hogy a NIKOVITS.ELADASOK3 illetve az SH.COSTS táblák második partíciójában
+milyen értékek szerepelhetnek.
+---------------------------------------------------------------------------
+SELECT partition_name, partition_position pos, high_value, partition_position FROM dba_tab_partitions 
+WHERE (table_owner='NIKOVITS' AND table_name='ELADASOK3'
+OR table_owner='SH' AND table_name='COSTS') AND partition_position =2;
+
+Adjuk meg egy partícionált tábla logikai és fizikai részeit (pl. NIKOVITS.ELADASOK). 
+Maga a tábla most is logikai objektum, a partíciói vannak fizikailag tárolva.
+Nézzük meg az objektumok és a szegmensek között is.
+---------------------------------------------------------------------------
+SELECT object_name, object_type, subobject_name, object_id, data_object_id
+FROM dba_objects WHERE owner='NIKOVITS' AND object_name='ELADASOK';
+
+SELECT * FROM dba_segments WHERE owner='NIKOVITS' AND segment_name='ELADASOK';
+
+Illetve ha alpartíciói is vannak (pl. nikovits.eladasok4), akkor csak az alpartíciók 
+vannak tárolva. Nézzük meg az objektumok és a szegmensek között is.
+---------------------------------------------------------------------------
+SELECT object_name, object_type, subobject_name, object_id, data_object_id
+FROM dba_objects WHERE owner='NIKOVITS' AND object_name='ELADASOK4';
+
+SELECT * FROM dba_segments WHERE owner='NIKOVITS' AND segment_name='ELADASOK4';
+
+Melyik a legnagyobb méretu partícionált tábla az adatbázisban a partíciók 
+összméretét tekintve? (az alpartícióval rendelkezo táblákat is vegyük figyelembe)
+---------------------------------------------------------------------------
+SELECT owner, segment_name, SUM(bytes) FROM dba_segments 
+WHERE segment_type LIKE 'TABLE%PARTITION'
+GROUP BY owner, segment_name
+ORDER BY SUM(bytes) DESC;
+
+
+Klaszter (CLUSTER)
+------------------
+(DBA_CLUSTERS, DBA_CLU_COLUMNS, DBA_TABLES, DBA_CLUSTER_HASH_EXPRESSIONS)
+
+Hozzunk létre egy DOLGOZO(dazon, nev, beosztas, fonoke, fizetes, oazon ... stb.) 
+és egy OSZTALY(oazon, nev, telephely ... stb.) nevu táblát. 
+(lásd NIKOVITS.DOLGOZO és NIKOVITS.OSZTALY)
+A két táblának az osztály azonosítója (oazon) lesz a közös oszlopa. A két táblát 
+egy index alapú CLUSTEREN hozzuk létre. (Elobb persze létre kell hozni a clustert is.)
+Majd tegyünk bele 3 osztályt, és osztályonként két dolgozót.
+
+Adjunk meg egy olyan clustert az adatbázisban (ha van ilyen), amelyen még nincs
+egy tábla sem. 
+---------------------------------------------------------------------------
+SELECT owner, cluster_name FROM dba_clusters  
+ MINUS
+SELECT owner, cluster_name FROM dba_tables;
+
+Adjunk meg egy olyant, amelyiken legalább 6 darab tábla van.
+---------------------------------------------------------------------------
+SELECT owner, cluster_name FROM dba_tables WHERE cluster_name IS NOT NULL
+GROUP BY owner, cluster_name HAVING COUNT(*) >= 6;
+
+Adjunk meg egy olyan clustert, amelynek a cluster kulcsa 3 oszlopból áll.
+(Vigyázat!!! Több tábla is lehet rajta)
+---------------------------------------------------------------------------
+SELECT owner, cluster_name FROM dba_clu_columns  
+GROUP BY owner, cluster_name HAVING COUNT(DISTINCT clu_column_name) = 3;
+
+HASH CLUSTER
+Hány olyan hash cluster van az adatbázisban, amely nem az oracle alapértelmezés 
+szerinti hash függvényén alapul?
+---------------------------------------------------------------------------
+SELECT COUNT(*) FROM
+(SELECT owner, cluster_name, hash_expression FROM dba_cluster_hash_expressions);
+
+Hozzunk létre egy hash clustert és rajta két táblát, majd szúrjunk be a 
+táblákba sorokat úgy, hogy a két táblának 2-2 sora ugyanabba a blokkba 
+kerüljön. Ellenorizzük is egy lekérdezéssel, hogy a 4 sor valóban ugyanabban 
+a blokkban van-e. (A ROWID lekérdezésével)
+TIPP: A sorok elhelyezését befolyásolni tudjuk a HASH IS megadásával.
+
+
+*/
+
+
+
+--http://people.inf.elte.hu/nikovits/AB2/cr_part_index.txt
+--táblához tartozik index. Index mérete? füzet(gyak)
+--csak a partíciókhoz készítünk indexeket...
+
+
+Adjuk meg az SH felhasználó tulajdonában levo partícionált táblák nevét és a 
+particionálás típusát.
+---------------------------------------------------------------------------
+SELECT table_name, partitioning_type FROM dba_part_tables WHERE owner = 'SH';
+--HELP
+select * from dba_part_tables where owner='SH';
+
+
+
+
+--adatok mennyi helyet foglalnak ; mennyi avn lefoglalva (segmens)
+
+Soroljuk fel az SH.COSTS tábla partícióit valamint, hogy hány blokkot foglalnak
+az egyes partíciók. (Vigyázat! Egyes adatszótárak csak becsült méretet tartalmaznak.
+A pontos méreteket az extenseknél és szegmenseknél keressük.)
+---------------------------------------------------------------------------
+SELECT partition_name, blocks FROM dba_tab_partitions WHERE table_owner='SH' AND table_name='COSTS';
+
+SELECT segment_name, partition_name, blocks 
+FROM dba_segments WHERE owner='SH' AND segment_type='TABLE PARTITION' and segment_name='COSTS';
+
+
+...
+
+
+--Hagyományos, indexszervezett, particionált : TÁBLA
+-- +1: CLUSTER TABLE
+-- ha két táblázatot sokszor használunk együtt: mehetnek egy telepre és ikerházként fölépítjük;
+-- köv: két ház egybeépítése
+
+
+
+drop table emp_clt;
+drop table dept_clt;
+drop cluster personnel_cl;
+drop table cikk_hclt;
+drop table szallit_hclt;
+drop cluster cikk_hcl;
+drop table cikk_hcl2t;
+drop cluster cikk_hcl2;
+drop cluster cikk_hcl3;
+
+-- Cluster létrehozása (index cluster lesz):
+CREATE CLUSTER personnel_cl (department_number NUMBER(2)) SIZE 4K; -- lefoglaljuk a telket, ahova a két házat fölépítjük; közös szoba neve: department_number; 2 számot fog tartalmazni
+
+
+
+-- Táblák létrehozása a clusteren:
+CREATE TABLE emp_clt -- emp tábla létrehozása
+  (empno NUMBER PRIMARY KEY, ename VARCHAR2(30), job VARCHAR2(27),
+   mgr NUMBER(4), hiredate DATE, sal NUMBER(7,2), comm NUMBER(7,2), 
+   deptno NUMBER(2) NOT NULL)
+CLUSTER personnel_cl (deptno); -- ugyanaz a létrehozás, csak megadjuk, hogy clusterbe építsen; meyik oszlop lesz a közös helyiség: deptno 
+  
+CREATE TABLE dept_clt -- dept létrehozása
+  (deptno NUMBER(2), dname VARCHAR2(42), loc VARCHAR2(39))
+CLUSTER personnel_cl (deptno); --költöztesse be a telepre; közös helyiség: deptno ; sila-nal: dolgozo::: oazon<=>deptno
+
+-- Index létrehozása (csak ezután lehet sorokat beszúrni):
+CREATE INDEX personnel_cl_idx ON CLUSTER personnel_cl;
+INSERT INTO emp_clt SELECT * FROM nikovits.emp;
+INSERT INTO dept_clt SELECT * FROM nikovits.dept;
+
+
+select rowid, ename from emp_clt where deptno=10
+union
+select rowid, dname from dept_clt where deptno=20;
+
+select * from dba_clusters;
+
+select * from user_clu_columns;
+
+/*-- Saját hash függvényt adunk meg:
+--én mondom meg, hogy a szortírozásnak mi legyen a fv-e 
+
+CREATE CLUSTER cikk_hcl2 (ckod  NUMBER ) HASHKEYS 30 HASH IS MOD(ckod, 53);
+CREATE TABLE cikk_hcl2t(ckod NUMBER, cnev VARCHAR2(20), 
+             szin VARCHAR2(15), suly FLOAT) 
+CLUSTER cikk_hcl2(ckod); 
+INSERT INTO cikk_hcl2t select * from cikk;
+
+CREATE CLUSTER cikk_hcl3 (ckod  NUMBER ) SINGLE TABLE HASHKEYS 30;*/
+
+
+Adjunk meg egy olyant, amelyiken legalább 6 darab tábla van.
+---------------------------------------------------------------------------
+SELECT owner, cluster_name FROM dba_tables WHERE cluster_name IS NOT NULL
+GROUP BY owner, cluster_name HAVING COUNT(*) >= 6;
+
+
+''
+
+
+/*ZH SEGÉDLET*/
+
+// nem ellenorzött
+
+1. Mely felhasználóknak van olyan partícionált táblái, amelyekre legalább 3 BITMAP index van létrehozva. (Név)
+
+select owner from
+(select distinct owner, object_name from dba_objects where OBJECT_TYPE='TABLE PARTITION'
+intersect
+select owner,table_name from dba_indexes where INDEX_TYPE='BITMAP' group by owner,table_name having count(table_name)>=3 order by owner);
+
+
+2. Mely felhasználók indexei foglalják a legtöbb helyet az adatbázisban?
+
+select owner,bytes from dba_segments where bytes=(select max(bytes) from dba_segments where segment_type='INDEX' ) ;
+
+
+3. Adjuk meg azoknak a tábláknak a nevét, amelyeknek 1. és utolsó oszlopa is DATE típusú!
+
+select TABLE_NAME from dba_tab_columns where data_type='DATE' and column_id=1
+intersect
+select TABLE_NAME from (select TABLE_NAME, COLUMN_NAME, max(COLUMN_ID) from dba_tab_columns where data_type='DATE' group by table_name,column_name);
+
+
+4. Mely táblatéren vna a legkevesebb tábla?
+
+select TABLESPACE_NAME from (select TABLESPACE_NAME,count(TABLE_NAME) as counted from DBA_TABLES  group by TABLESPACE_NAME order by counted asc ) where rownum=1;
+
+vagy tán inkább
+
+select TABLESPACE_NAME from (select TABLESPACE_NAME,count(TABLE_NAME) as counted from DBA_TABLES  group by TABLESPACE_NAME) what where what.counted= (select max(yolo.counted) from (select TABLESPACE_NAME,count(TABLE_NAME) as counted from DBA_TABLES  group by TABLESPACE_NAME) yolo);
+
+
+5. Adjuk meg a NIKOVITS tulajdonában levõ index szervezett táblák nevét, az index részük nevét, és a túlcsordulási részük nevét, ha van. Ha nincs túlcsordulási rész, akkor a lekérdezés azt írja ki a név helyett, hogy "nincs". (IOTnlv, Indexnév, Túlcsordulásnév)
+
+
+6. Melyik a legnagyobb méretû cluster szegmens az adatbáisban és hány blokkból áll?
+
+/******************************GYAK 10 2017/11/28 ****************************************/
+
+
+create table PLAN_TABLE (
+        statement_id       varchar2(30),
+        plan_id            number,
+        timestamp          date,
+        remarks            varchar2(4000),
+        operation          varchar2(30),
+        options            varchar2(255),
+        object_node        varchar2(128),
+        object_owner       varchar2(30),
+        object_name        varchar2(30),
+        object_alias       varchar2(65),
+        object_instance    numeric,
+        object_type        varchar2(30),
+        optimizer          varchar2(255),
+        search_columns     number,
+        id                 numeric,
+        parent_id          numeric,
+        depth              numeric,
+        position           numeric,
+        cost               numeric,
+        cardinality        numeric,
+        bytes              numeric,
+        other_tag          varchar2(255),
+        partition_start    varchar2(255),
+        partition_stop     varchar2(255),
+        partition_id       numeric,
+        other              long,
+        distribution       varchar2(30),
+        cpu_cost           numeric,
+        io_cost            numeric,
+        temp_space         numeric,
+        access_predicates  varchar2(4000),
+        filter_predicates  varchar2(4000),
+        projection         varchar2(4000),
+        time               numeric,
+        qblock_name        varchar2(30),
+        other_xml          clob
+);
+
+//utlxplan.txt branyi gyak2/tx
+
+
+
+select * from plan_table;
+PLAN_TABLE: 
+acces_predicates: feltételek (nincs grafikusba)
+milyen oszlopokat ír ki a gép: PROJECTION
+
+delete plan_table;
+select * from sila.emp natural join sila.dept;
+
+explain plan for
+select * from sila.emp natural join sila.dept;
+
+explain plan SET statement_id='lekerdezesek' for --ELNEVEZÉS
+select deptno from sila.emp natural join sila.dept;
+
+explain plan SET statement_id='lekerdezesek_natural' for --ELNEVEZÉS
+select deptno from sila.dept natural join sila.emp;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek_natural'));
+select * from sila.emp natural join sila.dept;
+select * from sila.emp;
+
+
+explain plan SET statement_id='lekerdezesek_emp' for --ELNEVEZÉS
+select deptno from sila.emp;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek_emp'));
+
+select * from plan_table where statement_id='lekerdezesek';
+
+--------------------------------------------------------------------------http://people.inf.elte.hu/branyi/ora/gyak2/t07/x_plan.txt
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek')); --grafikus kirajzolás
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek','all'));
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek','basic'));
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek','serial'));
+--3. paraméter: 
+--all: részletes
+--basic: minimális
+--serial: mit csinál a gép+ feltételek 
+-- * : ahol a feltétel van
+select /*+use_nl(emp dept)*/ deptno from sila.emp natural join sila.dept;
+
+
+select * from plan_table;
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE',null,'serial')); -- utolsó kiírására 
+(melyik tábla,milyen név, mód)
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE',null,'serial')); <=>  select * from table(dbms_xplan.DISPLAY('PLAN_TABLE');
+
+explain plan SET statement_id='lek_descartes_szuressel' for --ugyanaz mint a natural join
+select * from sila.emp,sila.dept where sila.emp.deptno=sila.dept.deptno;
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lek_descartes_szuressel','serial'));
+
+--SORT AGGREGATE: aggregációs fv. pl: sum, max... (mindegy melyik fv, nem derül ki)
+
+--ZH: 3 ilyen ábra: kitalálni a lekérdezést
+--ZH: rávenni a gépet hogy...
+
+--------------------------------------------------------------------------------------http://people.inf.elte.hu/branyi/ora/gyak2/t07/hintek.txt
+
+/*+*/ - hintek adása 
+select /*+use_merge(sila.emp sila.dept)*/ * from sila.emp natural join sila.dept; --parancs
+select /*+use_merg(sila.emp sila.dept)*/ * from sila.emp natural join sila.dept; -- megjegyzés (elgépelés)
+no_use_hash(emp,dept)-- ne hash-el
+
+SELECT /*+index(...)*/* FROM table
+
+select sum(suly) from cikkt where ckod<300;--INDEX-el (keresõfa:rowid->sor)
+select sum(suly) from cikkt where ckod<500;-- NEM HASZNÁL INDEX-et (összes adaton végig, csak azt nézem, amire szükség van)
+
+--
+
+select /*+full(a)*/ sum(suly) from nikovits.cikk a where ckod<10;--átnevezésnél, az átnevezett név használata
+select /*+full(cikk)*/ sum(suly) from nikovits.cikk a where ckod<10;--tulajdonos neve nem kell full módszerben
+
+--két tábla, natural join: hash
+--descartes: merge (hash-hez feltétel is kell, ha nincs benne nem hajtja végre)
+
+Feladat pl: lekérdezés átírása úgy, hogy pl a gép ne használjon indexet... 
+FILETER: havingben mi van
+TABLE ACCESS- 1 pont pl. 
+---------------------------------------------------------http://people.inf.elte.hu/nikovits/AB2/tervek1.txt
+SELECT * FROM nikovits.emp;
+explain plan SET statement_id='nik_emp' for
+SELECT * FROM nikovits.emp;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','nik_emp','serial'));
+
+explain plan SET statement_id='nik_emp_ename' for
+SELECT ename FROM nikovits.emp;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','nik_emp_ename'));
+
+(distinct)
+
+explain plan SET statement_id='nik_emp_ename_distinct' for
+SELECT DISTINCT deptno FROM nikovits.emp;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','nik_emp_ename_distinct','basic'));
+
+(distinct - order by)
+
+explain plan SET statement_id='nik_emp_ename_distinct_orderby' for
+SELECT DISTINCT deptno FROM nikovits.emp order by deptno;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','nik_emp_ename_distinct_orderby','basic'));
+
+(order by)
+
+delete plan_table;
+explain plan SET statement_id='nik_emp_ename_orderby' for
+SELECT ename FROM nikovits.emp ORDER BY deptno;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','nik_emp_ename_orderby','serial'));
+
+(group by)
+
+explain plan SET statement_id='nik_emp_ename_groupby' for
+SELECT deptno, AVG(sal) FROM sila.emp GROUP BY deptno;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','nik_emp_ename_groupby','serial'));
+
+(having)
+--FILTER *
+--HASH GROUP BY
+--* sum(sal)>3000 (having feltétele)
+explain plan SET statement_id='nik_having' for
+SELECT deptno, AVG(sal) FROM sila.emp GROUP BY deptno  HAVING SUM(sal) > 3000;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','nik_having','serial'));
+
+(join)
+
+explain plan SET statement_id='nik_join' for
+SELECT ename, dname FROM sila.emp, sila.dept WHERE emp.deptno=dept.deptno;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','nik_join','serial'));
+
+(union all)
+
+explain plan SET statement_id='union_all' for
+SELECT deptno FROM sila.emp  UNION  ALL SELECT deptno FROM sila.dept;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','union_all','serial'));
+
+explain plan SET statement_id='union_all-cs' for
+SELECT * FROM sila.emp  UNION  ALL SELECT * FROM sila.dept;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','union_all-cs','serial')); -- NEM JÓ
+
+ (UNION)
+ 
+explain plan SET statement_id='union_all' for
+SELECT deptno FROM sila.emp  UNION  ALL SELECT deptno FROM sila.dept;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','union_all','serial'));
+
+(minus) 
+
+explain plan SET statement_id='minus' for
+SELECT deptno FROM nikovits.dept  MINUS  SELECT deptno FROM nikovits.emp;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','minus','serial'));
+
+(IN)--HASH JOIN  SEMI
+IN-SEMI
+/*
+HASH JOIN  SEMI *
+DEPTNO=DEPTNO, vagyis (...where deptno IN (select deptno...))
+másik *: DEPT-be a where feltétel: WHERE-FILTER-ben
+*/
+
+explain plan SET statement_id='in' for
+SELECT ename FROM nikovits.emp WHERE deptno IN (SELECT deptno FROM nikovits.dept WHERE loc='DALLAS');
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','in','serial'));
+
+
+(NOT IN) -- HASH JOIN ANTI *
+--*: access: deptno=deptno (...deptno not in(select deptno...))
+NOT IN- ANTI
+explain plan SET statement_id='not-in' for
+SELECT ename FROM sila.emp WHERE deptno NOT IN(SELECT deptno FROM sila.dept WHERE loc='DALLAS');
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','not-in','serial'));
+
+
+(NOT EXISTS) -- HASH JOIN ANTI*
+--* access("EMP"."DEPTNO"="DEPT"."DEPTNO")
+-- access-ben 2 feltétel: AND
+explain plan SET statement_id='not-exists' for
+SELECT ename FROM sila.emp WHERE NOT EXISTS(SELECT * FROM sila.dept WHERE loc='DALLAS' AND sila.emp.deptno=sila.dept.deptno);
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','not-exists','serial'));
+
+explain plan SET statement_id='szallit_a' for
+select * from branyi.szallit;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','szallit_a','serial'));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=====================&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=====================&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=====================&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=====================&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=====================
+
+
+---------------------------------------------------------------------------------------
+2017.05.15 ZH C. csoport (branyi_2017-5-15_C.jpg)
+---------------------------------------------------------------------------------------
+A
+MEGOLDÁS: 
+explain plan SET statement_id='szallit_a2' for
+select szkod,count(ckod) from branyi.szallit group by szkod having count(ckod)>4;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','szallit_a2','serial'));
+
+select szkod,count(ckod) from branyi.szallit group by szkod having count(ckod)>4;
+---------------------------------------------------------------------------------------
+B
+
+select * from nikovits.szallit;
+select * from nikovits.cikk;
+
+select ckod,sum(szkod) from nikovits.szallit natural join nikovits.cikk group by ckod;
+
+explain plan SET statement_id='szallit_b' for
+select ckod from nikovits.szallit where not exists
+(select * from nikovits.cikk where szin='piros' and nikovits.szallit.ckod=nikovits.cikk.ckod);
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','szallit_b','serial'));
+
+MEGOLDÁS: (még ré kéne venni a SORT group by-ra??? )
+
+explain plan SET statement_id='szallit_b2' for
+select ckod,sum(szkod) from nikovits.szallit where not exists
+(select * from nikovits.cikk where szin='piros' and nikovits.szallit.ckod=nikovits.cikk.ckod) group by ckod;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','szallit_b2','serial'));
+
+---------------------------------------------------------------------------------------
+C
+select * from nikovits.projekt;
+select * from nikovits.szallit;
+select * from nikovits.cikk;
+
+Egyik rész:
+explain plan SET statement_id='c' for
+select sum(pkod) from nikovits.projekt where helyszin='Pecs';
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','c','serial'));
+
+Másik rész: 
+explain plan SET statement_id='c' for
+select szkod from nikovits.szallit where ckod in(select ckod from nikovits.cikk where szin='lila');
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','c','serial'));
+Összekapcsolás: ? 
+
+Másik gondolat: 
+
+explain plan SET statement_id='c' for
+
+
+select sum(pkod) from nikovits.projekt where helyszin='Pecs' and pkod in
+
+(select pkod from nikovits.szallit,nikovits.cikk where nikovits.szallit.ckod=nikovits.cikk.ckod and szin='lila');
+
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','c','serial'));
+
+
+---------------------------------------------------------------------------------------
+BRANYI ZH (branyi_zh2.jpg) 
+Feladat1: ??? majd
+Feladat2:
+---------------------------------------------------------------------------------------
+A
+select * from branyi.hajos;
+select * from branyi.csonak;
+select * from branyi.berles;
+
+select * from branyi.csonak,branyi.berles where csonak.szin='piros';
+
+MEGOLDÁS: (elvileg OK)
+explain plan SET statement_id='A' for
+select * from branyi.hajos where hazon in (select hazon from branyi.csonak natural join branyi.berles where csonak.szin='piros');
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','A','serial'));
+
+---------------------------------------------------------------------------------------
+C
+select * from branyi.hajos;
+select * from branyi.berles;
+
+MEGOLDÁS: (elvileg OK)
+explain plan SET statement_id='C' for
+select /*+use_sort(branyi.hajos branyi.berles)*/hazon,count(*) from branyi.hajos natural join branyi.berles group by
+hazon having count(*)>=4;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','C','serial'));
+
+---------------------------------------------------------------------------------------
+B
+
+select * from branyi.csonak;
+select * from branyi.berles;
+
+select * from branyi.csonak natural join  branyi.berles;
+select * from branyi.berles B1,branyi.berles B2 where B1.DATUM > B2.DATUM;
+
+MEGOLDÁS: (nem teljesen jó)
+explain plan SET statement_id='B' for
+select * from branyi.csonak natural join branyi.berles B1,branyi.berles B2 where B1.DATUM > B2.DATUM;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','B','serial'));
+
+
+---------------------------------------------------------------------------------------
+BRANYI ZH (branyi_zh2_G.jpg) 
+Feladat1: ??? majd
+Feladat2:
+---------------------------------------------------------------------------------------
+A
+select * from branyi.járt_ott;
+select * from branyi.szülõ;
+select * from branyi.családtag;
+
+select * from branyi.családtag natural join branyi.szülõ where branyi.családtag.életévek>50;
+
+MEGOLDÁS: 
+explain plan SET statement_id='A' for
+select * from branyi.járt_ott where szigsz IN 
+(select szigsz from branyi.szülõ natural join branyi.családtag where branyi.családtag.életévek>50) ;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','A','serial'));
+
+---------------------------------------------------------------------------------------
+B
+select * from branyi.szülõ;
+select * from branyi.családtag;
+
+
+MEGOLDÁS: 
+--Hiányzik a HASH UNIQUE sor
+-- Nem ugyanaz a két access feltétel
+
+explain plan SET statement_id='B' for
+select * from branyi.szülõ natural join branyi.családtag SZ1 natural join branyi.szülõ SZ2;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','B','serial'));
+
+
+---------------------------------------------------------------------------------------
+C
+select * from branyi.járt_ott;
+select * from branyi.családtag;
+
+MEGOLDÁS: 
+explain plan SET statement_id='C' for
+select szigsz from branyi.családtag natural join branyi.járt_ott group by szigsz having avg(ajándékdb)>=2;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','C','serial'));
+
+
+---------------------------------------------------------------------------------------
+2015-12-3
+BRANYI ZH (branyi_zh2_D.jpg) 
+Feladat1: ??? majd
+Feladat2:
+---------------------------------------------------------------------------------------
+A
+select * from hr.employees;
+
+MEGOLDÁS: 
+explain plan SET statement_id='A' for
+select * from hr.employees where manager_id<150 and department_id<50;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','A','serial'));
+
+---------------------------------------------------------------------------------------
+B
+select * from hr.employees;
+select * from hr.jobs;
+
+MEGOLDÁS: (nem jó)
+explain plan SET statement_id='B' for
+select * from hr.jobs natural join hr.employees where hr.employees.first_name='David';
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','B','serial'));
+
+---------------------------------------------------------------------------------------
+C
+select * from hr.employees;
+
+
+---
+explain plan SET statement_id='C' for
+select job_id,avg(salary) from hr.employees natural join hr.employees group by job_id having  avg(salary)>10; 
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','C','serial'));
+
+
+
+select * from hr.employees E1, hr.employees V;
+group by employee_id having E1.salary>avg(V.salary);

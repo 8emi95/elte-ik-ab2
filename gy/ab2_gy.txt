@@ -1,0 +1,27 @@
+2017.09.12
+1. AB2 GY
+
+http://people.inf.elte.hu/nikovits/adatbazis_eleres.txt
+host
+port
+service
+
+ARAMIS
+host: aramis.inf.elte.hu
+port: 1521
+service_name: eszakigrid97
+
+GRID97
+host: eszakigrid97.inf.elte.hu
+port: 1521
+service_name: eszakigrid97
+
+fh: T6ESML
+pwd: t6esml
+
+http://people.inf.elte.hu/branyi/
+1-es zh -> vizsgaid 1-2. hete
+
+
+http://people.inf.elte.hu/branyi/ora/gyak2/t01/abterv_feladatok1.txt
+aramis-on csak sila.szeret

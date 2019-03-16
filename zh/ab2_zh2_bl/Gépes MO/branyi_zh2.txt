@@ -1,0 +1,43 @@
+
+---------------------------------------------------------------------------------------
+BRANYI ZH (branyi_zh2.jpg) 
+Feladat1: ??? majd
+Feladat2:
+---------------------------------------------------------------------------------------
+A
+select * from branyi.hajos;
+select * from branyi.csonak;
+select * from branyi.berles;
+
+select * from branyi.csonak,branyi.berles where csonak.szin='piros';
+
+MEGOLDÁS: (elvileg OK)
+explain plan SET statement_id='A' for
+select * from branyi.hajos where hazon in (select hazon from branyi.csonak natural join branyi.berles where csonak.szin='piros');
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','A','serial'));
+
+---------------------------------------------------------------------------------------
+C
+select * from branyi.hajos;
+select * from branyi.berles;
+
+MEGOLDÁS: (elvileg OK)
+explain plan SET statement_id='C' for
+select /*+use_sort(branyi.hajos branyi.berles)*/hazon,count(*) from branyi.hajos natural join branyi.berles group by
+hazon having count(*)>=4;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','C','serial'));
+
+---------------------------------------------------------------------------------------
+B
+
+select * from branyi.csonak;
+select * from branyi.berles;
+
+select * from branyi.csonak natural join  branyi.berles;
+select * from branyi.berles B1,branyi.berles B2 where B1.DATUM > B2.DATUM;
+
+MEGOLDÁS: (nem teljesen jó)
+explain plan SET statement_id='B' for
+select * from branyi.csonak natural join branyi.berles B1,branyi.berles B2 where B1.DATUM > B2.DATUM;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','B','serial'));
+

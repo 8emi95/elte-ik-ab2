@@ -1,0 +1,193 @@
+// van COMMIT, az END CKPT előtt -> ok, semmi
+// van COMMIT, az END CKPT után / nincs END -> felülről végig, új értékkel leírjuk, végén END
+// nincs COMMIT -> alulról, régi értékkel leírjuk, végén ABORT
+// van CKPT, nincs END CKPT -> ignore CKPT
+// van CKPT, van END CKPT -> csak CKPT-ig megyünk vissza
+
+UNDO-REDO -- addig nem mehet el az ügyfél, míg nem kapja meg amit rendelt
+Jelölései: 
+    <T,START>
+    <T,változó,érték1=mi volt,érték2=új érték)
+
+    <T,COMMIT> -- mindent elmondott amit akart; megkapott mindent? (van END?), 
+                  ha nincs akkor mint a REDO-nál, fülölről lefelé "újra megkapja" amit akart
+    <T,END> -- ha át is vette turira amit kért
+
+    COMMIT felett száll el: Az ügyfél nem fejezte be amit kért, de lehet hogy már kapott valamit
+    mo: visszaállítjuk alulról fölfelé az eredeti állapotot,. majd <T ABORT>
+
+
+--------------------------------------------------------------------------------------------------
+PÉLDA__1: UNDO/REDO NAPLÓZÁS 
+
+<T1,START>
+<T1,A,4,5>
+<T2,START>
+<T1,COMMIT>
+<T2,B,9,10>
+<START CKPT(T2)>
+<T2,C,14,15>
+<T3,START>
+<T3,D,19,20>
+<END CKPT>
+<T2,COMMIT>
+<T3,COMMIT>
+
+MEGOLDÁS:
+T1 mindent megkapott (az END előtt van COMMIT-ja) 
+T2 és T3-nak is van COMMIT-ja így megvan a rendelés, újra oda kell adni. (???)
+
+// <T2,B,10> nem tudom pontosan ezt miért _nem_ kell újra odaadni, de valami olyasmi, hogy , START CKPT(T2) fölött van
+<T2,C,15>
+<T3,D,20>
+<T2,END>
+<T3,END>
+
+
+--------------------------------------------------------------------------------------------------
+PÉLDA__2: UNDO/REDO NAPLÓZÁS 
+
+<T1,START>
+<T1,A,4,5>
+<T2,START>
+<T1,COMMIT>
+<T2,B,9,10>
+<START CKPT(T2)>
+<T2,C,14,15>
+<T3,START>
+<T3,D,19,20>
+<END CKPT>
+<T2,COMMIT>
+
+MEGOLDÁS:
+
+T2-nek van COMMIT-ja: a rendelést újra kivisszük. 
+T3-nak nincs COMMIT-ja, lehet az ügyfél akart még valamit, nem tudjuk, ezért visszaállítjuk az eredeti értékeket és úgy teszünk, mintha nem történt volna rendelés (ABORT)
+
+<T2,C,15>
+<T2,END>
+
+<T3,D,19>
+<T3,ABORT>
+
+
+--------------------------------------------------------------------------------------------------
+PÉLDA__3: UNDO/REDO NAPLÓZÁS 
+
+
+<T1,START>
+<T1,A,4,5>
+<T2,START>
+<T1,COMMIT>
+<T2,B,9,10>
+<START CKPT(T2)>
+<T2,C,14,15>
+
+
+MEGOLDÁS:
+Nincs END, így minden COMMIT-os rendelést kiviszünk, a többit elutasítjuk. 
+
+<T2,C,14>
+<T2,B,9>
+<T2,ABORT>
+
+<T1,A,5>
+<T1,END>
+
+
+-------------------------------------------------------------------------------------------------------
+FELADAT_1: UNDO/REDO NAPLÓZÁS (Régi ZH (BRÁNYI)) // 170102
+
+<T1,START>
+<T1,A,4,5>
+<T2,START>
+<T1,COMMIT>
+<T2,B,9,10>
+<T3,START>
+<T3,E,10,15>
+<START CKPT(T2,T3)>
+<T4,START>
+<T3,D,19,20>
+<T3,COMMIT>
+<END CKPT>
+<T4,F,15,16>
+<T2,COMMIT>
+
+MEGOLDÁS:
+
+// wtf
+<T4,F,15> // UNDO
+<T4,F,16> // REDO
+<T4,ABORT>
+
+// ?
+// <T2,B,10> CKPT előtt van
+<T2,END>
+
+<T4,F,15>
+<T4,ABORT>
+
+
+-------------------------------------------------------------------------------------------------------
+FELADAT_2: UNDO/REDO NAPLÓZÁS (Régi ZH (BRÁNYI)) / 170515
+
+<T1,START>
+<T1,A,4,5>
+<T2,START>
+<T1,COMMIT>
+<T2,B,9,10>
+<T3,START>
+<T4,START>
+<T4,F,15,16>
+<T2,COMMIT>
+<START CKPT(T3,T4)>
+<T5,START>
+<T3,D,19,20>
+<T5,B,15,10>
+
+MEGOLDÁS: // ?
+
+<T5,B,15>
+<T3,D,19>
+<T5,ABORT>
+<T4,F,15>
+<T4,ABORT>
+<T3,ABORT>
+
+<T1,A,5>
+<T1,END>
+<T2,B,10>
+<T2,END>
+
+
+-------------------------------------------------------------------------------------------------------
+FELADAT_3: UNDO/REDO NAPLÓZÁS (Régi ZH (BRÁNYI)) // ??????
+
+<T1,START>
+<T1,A,4,5>
+<T2,START>
+<T1,COMMIT>
+<T2,B,9,10>
+<T3,START>
+<T3,E,10,15>
+<START CKPT(T2,T3)>
+<T4,START>
+<T3,COMMIT>
+<T2,C,14,15>
+<T4,F,15,16>
+<T4,COMMIT>
+
+MEGOLDÁS:
+
+<T1,A,5>
+            // <T1,END>
+<T3,E,15>
+            // <T3,END>
+<T4,F,16>
+            // <T4,END>
+<T2,ABORT> // redo végén?
+
+<T2,C,14>
+<T2,B,9>
+<T2,ABORT>
+

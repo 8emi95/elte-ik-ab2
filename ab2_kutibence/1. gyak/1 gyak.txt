@@ -1,0 +1,139 @@
+﻿//gyakorolgatás
+
+select * from DBA_TABLES where owner='NIKOVITS';
+
+select TABLE_NAME from DBA_TABLES where owner='NIKOVITS' and TABLE_NAME LIKE '_I%';
+
+A rendszerkatalógus maga is egy adatbázisnak tekinthetõ, amit lekérdezve egyre többet
+tudhatunk meg az ORACLE adatbázisban tárolt dolgokról és azok tulajdonságairól.
+Elnevezésük: DBA_..., ALL_..., USER_...
+
+Vigyázat !!!
+Az alábbiakban ha egy objektumnak vagy egy felhasználónak a neve kisbetûvel 
+szerepel a feladat szövegében, az nem jelenti, hogy ez az adatszótárban is kisbetûvel
+van tárolva. Pl. orauser - ORAUSER felhasználó, emp - EMP tábla.
+
+Adatbázis objektumok
+--------------------
+(DBA_OBJECTS)
+
+Kinek a tulajdonában van a DBA_TABLES nevû nézet (illetve a DUAL nevû tábla)?
+
+select OWNER from DBA_VIEWS Where view_name='DBA_VIEWS';
+select OWNER from DBA_TABLES where TABLE_NAME='DUAL';
+
+Kinek a tulajdonában van a DBA_TABLES nevû szinonima (illetve a DUAL nevû)?
+(Az iménti két lekérdezés megmagyarázza, hogy miért tudjuk elérni õket.)
+
+select OWNER from DBA_SYNONYMS where SYNONYM_NAME='DBA_TABLES';
+select OWNER from DBA_SYNONYMS where SYNONYM_NAME='DUAL';
+
+Milyen típusú objektumai vannak az orauser nevû felhasználónak az adatbázisban?
+
+select * from DBA_OBJECTS;
+select distinct OBJECT_TYPE from DBA_OBJECTS where owner='ORAUSER';
+
+Hány különbözõ típusú objektum van nyilvántartva az adatbázisban?
+
+select * from DBA_TABLES;
+select count(distinct OBJECT_TYPE) from DBA_OBJECTS;
+
+Melyek ezek a típusok?
+
+select distinct OBJECT_TYPE from DBA_OBJECTS;
+
+Kik azok a felhasználók, akiknek több mint 10 féle objektumuk van?
+
+select * from DBA_OBJECTS;
+select OWNER from DBA_OBJECTS GROUP BY OWNER HAVING count(distinct OBJECT_TYPE) > 10;
+
+Kik azok a felhasználók, akiknek van triggere és nézete is?
+
+select distinct OWNER from DBA_OBJECTS where OBJECT_TYPE LIKE 'TRIGGER'
+INTERSECT
+select distinct OWNER from DBA_OBJECTS where OBJECT_TYPE LIKE 'VIEW';
+
+Kik azok a felhasználók, akiknek van nézete, de nincs triggere?
+
+select distinct OWNER from DBA_OBJECTS where OBJECT_TYPE LIKE 'VIEW'
+MINUS
+select distinct OWNER from DBA_OBJECTS where OBJECT_TYPE LIKE 'TRIGGER';
+
+Kik azok a felhasználók, akiknek több mint 40 táblájuk, de maximum 37 indexük van?
+
+//ez jó?????
+select OWNER from DBA_TABLES GROUP BY OWNER HAVING COUNT(distinct TABLE_NAME) > 40
+INTERSECT
+select OWNER from DBA_INDEXES GROUP BY OWNER HAVING COUNT(distinct INDEX_NAME) < 37;
+
+Melyek azok az objektum típusok, amelyek tényleges tárolást igényelnek, vagyis
+tartoznak hozzájuk adatblokkok? (A többinek csak a definíciója tárolódik adatszótárban)
+
+SELECT OBJECT_NAME FROM DBA_OBJECTS
+INTERSECT
+SELECT owner FROM DBA_TABLES GROUP BY owner HAVING COUNT(BLOCKS) > 0 ;
+SELECT * FROM DBA_OBJECTS;
+
+
+//???
+
+Melyek azok az objektum típusok, amelyek nem igényelnek tényleges tárolást, vagyis nem
+tartoznak hozzájuk adatblokkok? (Ezeknek csak a definíciója tárolódik adatszótárban)
+Az utóbbi két lekérdezés metszete nem üres. Vajon miért? -> lásd majd partícionálás
+
+//????
+
+Táblák oszlopai
+---------------
+(DBA_TAB_COLUMNS)
+
+Hány oszlopa van a nikovits.emp táblának?
+
+SELECT * FROM NIKOVITS.EMP;
+SELECT count(*) FROM DBA_TAB_COLUMNS WHERE OWNER='NIKOVITS' AND TABLE_NAME='EMP';
+
+Milyen típusú a nikovits.emp tábla 6. oszlopa?
+
+SELECT DATA_TYPE FROM DBA_TAB_COLUMNS WHERE OWNER='NIKOVITS' AND TABLE_NAME='EMP' AND COLUMN_ID='6';
+
+Adjuk meg azoknak a tábláknak a tulajdonosát és nevét, amelyeknek van 'Z' betûvel 
+kezdõdõ oszlopa.
+
+SELECT OWNER, TABLE_NAME FROM DBA_TAB_COLUMNS WHERE COLUMN_NAME LIKE 'Z%';
+
+Adjuk meg azoknak a tábláknak a nevét, amelyeknek legalább 8 darab dátum tipusú oszlopa van.
+
+//?????
+
+Adjuk meg azoknak a tábláknak a nevét, amelyeknek 1. es 4. oszlopa is
+VARCHAR2 tipusú.
+
+SELECT distinct TABLE_NAME FROM DBA_TAB_COLUMNS WHERE COLUMN_ID='1' AND DATA_TYPE='VARCHAR2'
+INTERSECT
+SELECT distinct TABLE_NAME FROM DBA_TAB_COLUMNS WHERE COLUMN_ID='4' AND DATA_TYPE='VARCHAR2';
+
+
+Írjunk meg egy plsql procedúrát, amelyik a paraméterül kapott karakterlánc alapján 
+kiírja azoknak a tábláknak a nevét és tulajdonosát, amelyek az adott karakterlánccal 
+kezdõdnek. (Ha a paraméter kisbetûs, akkor is mûködjön a procedúra!)
+     PROCEDURE table_print(p_kar VARCHAR2) 
+A fenti procedúra segítségével írjuk ki a Z betûvel kezdõdõ táblák nevét és tulajdonosát.
+
+
+HÁZI FELADAT (kicsit több idõt igényel, mint a gyakorlaton megoldandók)
+------------
+Írjunk meg egy plsql procedúrát, amelyik a paraméterül kapott táblára kiírja 
+az õt létrehozó CREATE TABLE utasítást. 
+   PROCEDURE cr_tab(p_owner VARCHAR2, p_tabla VARCHAR2) 
+Elég ha az oszlopok típusát és DEFAULT értékeit kíírja, és elég ha a következõ típusú 
+oszlopokra mûködik.
+ CHAR, VARCHAR2, NCHAR, NVARCHAR2, BLOB, CLOB, NCLOB, NUMBER, FLOAT, BINARY_FLOAT, DATE, ROWID
+
+Teszteljük a procedúrát az alábbi táblával.
+CREATE TABLE tipus_proba(c10 CHAR(10) DEFAULT 'bubu', vc20 VARCHAR2(20), nc10 NCHAR(10), 
+  nvc15 NVARCHAR2(15), blo BLOB, clo CLOB, nclo NCLOB, num NUMBER, num10_2 NUMBER(10,2), 
+  num10 NUMBER(10) DEFAULT 100, flo FLOAT, bin_flo binary_float DEFAULT '2e+38', 
+  bin_doub binary_double DEFAULT 2e+40,
+  dat DATE DEFAULT TO_DATE('2007.01.01', 'yyyy.mm.dd'), rid ROWID);
+
+

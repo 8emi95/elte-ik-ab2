@@ -1,0 +1,17 @@
+Mátyás Papp
+Szia!
+3as feladathoz:
+A gráfban a csúcspontok a Ti tranzakciók, itt: (T1, T2, T3, T4). Rajzolsz egy ilyen 4 csúcsú gráfot és csupán a definíciót kell felhasználni, azaz Ti megelõzi Tj-t (vezet irányított él Ti -> Tj), ha Ti-ben van A1 és Tj-ben van A2 mûvelet úgy, hogy:
+i) A1 megelõzi A2-t az ütemezésben
+ii) A1 és A2 UGYANARRA az adatbázis elemre vonatkozik
+iii) A1 és A2 közül LEGALÁBB az egyik írás
+
+Ebben a feladatban pl.:
+r2(A) .. w1(A) miatt T2 < T1, azaz létezik a gráfban T2 -> T1 él :)
+Így az összes ilyen sorrendi megelõzést felírva megkapod az éleket.
+
+4es feladathoz:
+http://people.inf.elte.hu/nikovits/AB2/ab2_feladat6_mo.txt
+^6os feladat alapján megoldásnál ez: B(S)/(M-1)*B(R) + B(S)
+
+Amit te használtál képlet, azt hol találtad? :)

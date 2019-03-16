@@ -1,0 +1,12 @@
+Nem szabad: 
+- tarnzakción belül sorrendet változtatni (közéjük betehetek más utasítást, de a sorrend maradjon! )
+- 2 tranzakció esetén nem szabad cserélni, ha ugyanazt az adatot írják w1(A) és w2(A) 
+pl. nem cserélhető, mindketten A-t írják w-write
+
+Szabad: 
+- ha kül tranzakciók olvasnak (akkár ugyanazt az adatot is), 
+akkor ők cserélhetőek r1(A), r2(A) felcserélhető
+-cserélni, ha az egyik olvas, a másik ír, de különböző adatot pl: r1(A), w2(B)
+
+Jó-e egy bizonyos ütemezés? 
+Ha fel tudom cserélni olyanra, mintha a két főnök egymás után jött volna: jó

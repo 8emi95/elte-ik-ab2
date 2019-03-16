@@ -1,0 +1,203 @@
+nincs CKPT, van COMMIT -> ok, semmi
+nincs CKPT, nincs COMMIT -> alulról START-jáig, újra leírjuk, végén ABORT
+ignore CKPT
+
+--------------------------------------------------------------------------------------------------
+
+<T START>
+<T,változó,érték=mi volt)>
+<T COMMIT>
+
+-ha van <T,STRAT> és <T,COMMIT> akkor minden benne lévő OK. 
+Ha hiányzik a COMMIT azzal kell foglalkozni. Minden értéket 
+(módosítás előttit) visszaállítjuk, majd ABORT-tal lezárjuk. 
+
+--------------------------------------------------------------------------------------------------
+PÉLDA__1: UNDO NAPLÓZÁS 
+
+<T,START>
+<T,A,8>
+<T,B,8>
+<T,COMMIT>
+
+MEGOLDÁS: nincs teendő, az eredeti érték (8) változtatása sikeresen a lemezre került (COMMIT). 
+
+
+--------------------------------------------------------------------------------------------------
+PÉLDA__2: UNDO NAPLÓZÁS 
+
+<T1,START>
+<T1,A,5>
+<T2,START>
+<T2,B,10>
+<T2,C,15>
+<T1,D,20>
+<T1,COMMIT>
+<T2,COMMIT>
+<CKPT>
+<T3,START>
+<T3,E,25>
+<T3,F,30>
+
+MEGOLDÁS: (lentről felfelé) ; (megtaláltuk a ckpt-ot, nem kell fölé menni)
+
+<T3,F,30>
+<T3,E,25>
+<T3,ABORT>
+
+--------------------------------------------------------------------------------------------------
+PÉLDA__3: UNDO NAPLÓZÁS 
+
+<T1,START>
+<T1,A,5>
+<T2,START>
+<T2,B,10>
+
+MEGOLDÁS:
+
+<T2,B,10>
+<T2,ABORT>
+<T1,A,5>
+<T1,ABORT>
+
+--------------------------------------------------------------------------------------------------
+PÉLDA__4: UNDO NAPLÓZÁS 
+
+<T1,START>
+<T1,A,5>
+<T2,START>
+<T2,B,10>
+<START CKPT(T1,T2)>
+<T2,C,15>
+<T3,START>
+<T1,D,20>
+<T1,COMMIT>
+<T3,E,25>
+<T2,COMMIT>
+<END CKPT>
+<T3,F,30>
+
+MEGOLDÁS:
+
+<T3,F,30>
+<T3,E,25>
+<T3,ABORT>
+
+
+--------------------------------------------------------------------------------------------------
+PÉLDA__5: UNDO NAPLÓZÁS 
+
+<T1,START>
+<T1,A,5>
+<T2,START>
+<T2,B,10>
+<START CKPT(T1,T2)>
+<T2,C,15>
+<T3,START>
+<T1,D,20>
+<T1,COMMIT>
+<T3,E,25>
+
+
+MEGOLDÁS:
+<T3,E,25>
+<T3,ABORT>
+<T2,C,15>
+<T2,B,10>
+<T2,ABORT>
+
+
+
+-------------------------------------------------------------------------------------------------------
+PÉLDA__6: UNDO NAPLÓZÁS (Régi ZH (BRÁNYI)) // 170102
+
+<T,START>
+<T,A,10>
+<U,START>
+<U,B,20>
+<V,START>
+<V,D,40>
+<W,START>
+<W,E,50>
+<V,B,60>
+<V,COMMIT>
+<START CKPT(T,U,W)>
+<U,C,70>
+<U,COMMIT>
+<W,A,80>
+
+MEGOLDÁS: 
+
+<W,A,80>
+<W,E,50>
+<W,ABORT>
+<T,A,10>
+<T,ABORT>
+
+
+
+-------------------------------------------------------------------------------------------------------
+FELADAT: UNDO NAPLÓZÁS (Régi ZH (BRÁNYI)) // 170515
+
+<T,START>
+<T,A,10>
+<T,C,30>
+<V,START>
+<V,D,40>
+<V,B,60>
+<V,COMMIT>
+<START CKPT(T,W)>
+<W,A,80>
+<T,COMMIT>
+<U,START>
+<W,D,90>
+<END CKPT>
+<U,E,40>
+<W,COMMIT>
+
+MEGOLDÁS: // ?
+
+<U,E,40>
+<U,ABORT>
+
+/*
+Az undo naplózásnál ennek a megoldása hibás:
+FELADAT: UNDO NAPLÓZÁS (Régi ZH (BRÁNYI)) // 170515,mivel a napló maga hibás.Ugye <START CKPT(T,W)>-van, és a naplóban van <END CKPT>-is, és ezután van a <W,COMMIT>,
+viszont mivel a startnál a W benne van az <END CKPT> elött kéne legyen a <W,COMMIT>
+(naplo.ppt 65-ödik diáján megtalálható a szabály). Mondta Brányi, hogy ha a hibás naplót akarja valaki kijavítani, akkor 0 pont, ilyenkor csak oda kell írni, hogy hibás a napló és megvan a max pont a feladatra.
+*/
+
+JAVÍTOTT MEGOLDÁS: // ?
+
+<U,E,40>
+<W,D,90>
+<U,ABORT>
+<W,A,80>
+<W,ABORT>
+
+-------------------------------------------------------------------------------------------------------
+FELADAT: UNDO NAPLÓZÁS (Régi ZH (BRÁNYI)) // ??????
+
+<T,START>
+<T,A,10>
+<U,START>
+<U,B,20>
+<V,START>
+<V,D,40>
+<V,COMMIT>
+<U,C,70>
+<START CKPT(T,U)>
+<W,START>
+<T,C,30>
+<W,A,80>
+<T,COMMIT>
+<W,D,90>
+
+MEGOLDÁS:
+
+<W,D,90>
+<W,A,80>
+<W,ABORT> // utsó előtti?
+<U,C,70>
+<U,B,20>
+<U,ABORT>

@@ -1,0 +1,61 @@
+---------------------------------------------------------------------------------------
+2017.05.15 ZH C. csoport (branyi_2017-5-15_C.jpg)
+Feladat 1: ??? majd
+Feladat 2:
+---------------------------------------------------------------------------------------
+A
+MEGOLDÁS: 
+explain plan SET statement_id='szallit_a2' for
+select szkod,count(ckod) from branyi.szallit group by szkod having count(ckod)>4;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','szallit_a2','serial'));
+
+select szkod,count(ckod) from branyi.szallit group by szkod having count(ckod)>4;
+---------------------------------------------------------------------------------------
+B
+
+select * from nikovits.szallit;
+select * from nikovits.cikk;
+
+select ckod,sum(szkod) from nikovits.szallit natural join nikovits.cikk group by ckod;
+
+explain plan SET statement_id='szallit_b' for
+select ckod from nikovits.szallit where not exists
+(select * from nikovits.cikk where szin='piros' and nikovits.szallit.ckod=nikovits.cikk.ckod);
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','szallit_b','serial'));
+
+MEGOLDÁS: (még ré kéne venni a SORT group by-ra??? )
+
+explain plan SET statement_id='szallit_b2' for
+select ckod,sum(szkod) from nikovits.szallit where not exists
+(select * from nikovits.cikk where szin='piros' and nikovits.szallit.ckod=nikovits.cikk.ckod) group by ckod;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','szallit_b2','serial'));
+
+---------------------------------------------------------------------------------------
+C
+select * from nikovits.projekt;
+select * from nikovits.szallit;
+select * from nikovits.cikk;
+
+Egyik rész:
+explain plan SET statement_id='c' for
+select sum(pkod) from nikovits.projekt where helyszin='Pecs';
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','c','serial'));
+
+Másik rész: 
+explain plan SET statement_id='c' for
+select szkod from nikovits.szallit where ckod in(select ckod from nikovits.cikk where szin='lila');
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','c','serial'));
+Összekapcsolás: ? 
+
+Másik gondolat: 
+
+explain plan SET statement_id='c' for
+
+
+select sum(pkod) from nikovits.projekt where helyszin='Pecs' and pkod in
+
+(select pkod from nikovits.szallit,nikovits.cikk where nikovits.szallit.ckod=nikovits.cikk.ckod and szin='lila');
+
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','c','serial'));
+

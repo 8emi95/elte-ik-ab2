@@ -1,0 +1,35 @@
+﻿// nem ellenõrzött
+
+1. Mely felhasználóknak van olyan partícionált táblái, amelyekre legalább 3 BITMAP index van létrehozva. (Név)
+
+select owner from
+(select distinct owner, object_name from dba_objects where OBJECT_TYPE='TABLE PARTITION'
+intersect
+select owner,table_name from dba_indexes where INDEX_TYPE='BITMAP' group by owner,table_name having count(table_name)>=3 order by owner);
+
+
+2. Mely felhasználók indexei foglalják a legtöbb helyet az adatbázisban?
+
+select owner,bytes from dba_segments where bytes=(select max(bytes) from dba_segments where segment_type='INDEX' ) ;
+
+
+3. Adjuk meg azoknak a tábláknak a nevét, amelyeknek 1. és utolsó oszlopa is DATE típusú!
+
+select TABLE_NAME from dba_tab_columns where data_type='DATE' and column_id=1
+intersect
+select TABLE_NAME from (select TABLE_NAME, COLUMN_NAME, max(COLUMN_ID) from dba_tab_columns where data_type='DATE' group by table_name,column_name);
+
+
+4. Mely táblatéren vna a legkevesebb tábla?
+
+select TABLESPACE_NAME from (select TABLESPACE_NAME,count(TABLE_NAME) as counted from DBA_TABLES  group by TABLESPACE_NAME order by counted asc ) where rownum=1;
+
+vagy tán inkább
+
+select TABLESPACE_NAME from (select TABLESPACE_NAME,count(TABLE_NAME) as counted from DBA_TABLES  group by TABLESPACE_NAME) what where what.counted= (select max(yolo.counted) from (select TABLESPACE_NAME,count(TABLE_NAME) as counted from DBA_TABLES  group by TABLESPACE_NAME) yolo);
+
+
+5. Adjuk meg a NIKOVITS tulajdonában levő index szervezett táblák nevét, az index részük nevét, és a túlcsordulási részük nevét, ha van. Ha nincs túlcsordulási rész, akkor a lekérdezés azt írja ki a név helyett, hogy "nincs". (IOTnlv, Indexnév, Túlcsordulásnév)
+
+
+6. Melyik a legnagyobb méretű cluster szegmens az adatbáisban és hány blokkból áll?

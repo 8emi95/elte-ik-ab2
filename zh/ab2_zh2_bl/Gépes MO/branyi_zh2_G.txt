@@ -1,0 +1,43 @@
+---------------------------------------------------------------------------------------
+BRANYI ZH (branyi_zh2_G.jpg) 
+Feladat1: ??? majd
+Feladat2:
+---------------------------------------------------------------------------------------
+A
+select * from branyi.járt_ott;
+select * from branyi.szülõ;
+select * from branyi.családtag;
+
+select * from branyi.családtag natural join branyi.szülõ where branyi.családtag.életévek>50;
+
+MEGOLDÁS: 
+explain plan SET statement_id='A' for
+select * from branyi.járt_ott where szigsz IN 
+(select szigsz from branyi.szülõ natural join branyi.családtag where branyi.családtag.életévek>50) ;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','A','serial'));
+
+---------------------------------------------------------------------------------------
+B
+select * from branyi.szülõ;
+select * from branyi.családtag;
+
+
+MEGOLDÁS: 
+--Hiányzik a HASH UNIQUE sor
+-- Nem ugyanaz a két access feltétel
+
+explain plan SET statement_id='B' for
+select * from branyi.szülõ natural join branyi.családtag SZ1 natural join branyi.szülõ SZ2;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','B','serial'));
+
+
+---------------------------------------------------------------------------------------
+C
+select * from branyi.járt_ott;
+select * from branyi.családtag;
+
+MEGOLDÁS: 
+explain plan SET statement_id='C' for
+select szigsz from branyi.családtag natural join branyi.járt_ott group by szigsz having avg(ajándékdb)>=2;
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','C','serial'));
+

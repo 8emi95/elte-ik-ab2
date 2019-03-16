@@ -1,0 +1,121 @@
+/******************************GYAK 10 2017/11/28 ****************************************/
+
+
+create table PLAN_TABLE (
+        statement_id       varchar2(30),
+        plan_id            number,
+        timestamp          date,
+        remarks            varchar2(4000),
+        operation          varchar2(30),
+        options            varchar2(255),
+        object_node        varchar2(128),
+        object_owner       varchar2(30),
+        object_name        varchar2(30),
+        object_alias       varchar2(65),
+        object_instance    numeric,
+        object_type        varchar2(30),
+        optimizer          varchar2(255),
+        search_columns     number,
+        id                 numeric,
+        parent_id          numeric,
+        depth              numeric,
+        position           numeric,
+        cost               numeric,
+        cardinality        numeric,
+        bytes              numeric,
+        other_tag          varchar2(255),
+        partition_start    varchar2(255),
+        partition_stop     varchar2(255),
+        partition_id       numeric,
+        other              long,
+        distribution       varchar2(30),
+        cpu_cost           numeric,
+        io_cost            numeric,
+        temp_space         numeric,
+        access_predicates  varchar2(4000),
+        filter_predicates  varchar2(4000),
+        projection         varchar2(4000),
+        time               numeric,
+        qblock_name        varchar2(30),
+        other_xml          clob
+);
+
+//utlxplan.txt branyi gyak2/tx
+
+
+
+select * from plan_table;
+PLAN_TABLE: 
+acces_predicates: feltételek (nincs grafikusba)
+milyen oszlopokat ír ki a gép: PROJECTION
+
+delete plan_table;
+select * from sila.emp natural join sila.dept;
+
+explain plan for
+select * from sila.emp natural join sila.dept;
+
+explain plan SET statement_id='lekerdezesek' for --ELNEVEZÉS
+select deptno from sila.emp natural join sila.dept;
+
+
+select * from plan_table where statement_id='lekerdezesek';
+
+--------------------------------------------------------------------------http://people.inf.elte.hu/branyi/ora/gyak2/t07/x_plan.txt
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek')); --grafikus kirajzolás
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek','all'));
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek','basic'));
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lekerdezesek','serial'));
+--3. paraméter: 
+--all: részletes
+--basic: minimális
+--serial: mit csinál a gép+ feltételek 
+-- * : ahol a feltétel van
+select /*+use_nl(emp dept)*/ deptno from sila.emp natural join sila.dept;
+
+
+select * from plan_table;
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE',null,'serial')); -- utolsó kiírására 
+(melyik tábla,milyen név, mód)
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE',null,'serial')); <=>  select * from table(dbms_xplan.DISPLAY('PLAN_TABLE');
+
+explain plan SET statement_id='lek_descartes_szuressel' for --ugyanaz mint a natural join
+select * from sila.emp,sila.dept where sila.emp.deptno=sila.dept.deptno;
+
+select * from table(dbms_xplan.DISPLAY('PLAN_TABLE','lek_descartes_szuressel','serial'));
+
+--SORT AGGREGATE: aggregációs fv. pl: sum, max... (mindegy melyik fv, nem derül ki)
+
+--ZH: 3 ilyen ábra: kitalálni a lekérdezést
+--ZH: rávenni a gépet hogy...
+
+--------------------------------------------------------------------------------------http://people.inf.elte.hu/branyi/ora/gyak2/t07/hintek.txt
+
+/*+*/ - hintek adása 
+select /*+use_merge(sila.emp sila.dept)*/ * from sila.emp natural join sila.dept; --parancs
+select /*+use_merg(sila.emp sila.dept)*/ * from sila.emp natural join sila.dept; -- megjegyzés (elgépelés)
+no_use_hash(emp,dept)-- ne hash-el
+
+SELECT /*+index(...)*/* FROM table
+
+select sum(suly) from cikkt where ckod<300;--INDEX-el (keresõfa:rowid->sor)
+select sum(suly) from cikkt where ckod<500;-- NEM HASZNÁL INDEX-et (összes adaton végig, csak azt nézem, amire szükség van)
+
+--
+
+select /*+full(a)*/ sum(suly) from nikovits.cikk a where ckod<10;--átnevezésnél, az átnevezett név használata
+select /*+full(cikk)*/ sum(suly) from nikovits.cikk a where ckod<10;--tulajdonos neve nem kell full módszerben
+
+--két tábla, natural join: hash
+--descartes: merge (hash-hez feltétel is kell, ha nincs benne nem hajtja végre)
+
+Feladat pl: lekérdezés átírása úgy, hogy pl a gép ne használjon indexet... 
+FILETER: havingben mi van
+TABLE ACCESS- 1 pont pl. 
+---------------------------------------------------------http://people.inf.elte.hu/nikovits/AB2/tervek1.txt
+SELECT * FROM nikovits.emp;
+SELECT ename FROM nikovits.emp;

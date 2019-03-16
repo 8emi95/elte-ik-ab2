@@ -1,0 +1,35 @@
+1. 
+a)
+explain plan SET statement_id='1A' for select /*+ no_index(sz) */ * from nikovits.szallit sz natural join nikovits.cikk c where pkod=10;
+select plan_table_output from table(dbms_xplan.display('plan_table', '1A', 'serial'));
+
+b)
+explain plan SET statement_id='1B' for select /*+ index(sz) no_index(c) */ * from nikovits.szallit sz natural join nikovits.cikk c where pkod=10;
+select plan_table_output from table(dbms_xplan.display('plan_table', '1B', 'serial'));
+
+2.
+a)
+explain plan SET statement_id='2A' for select szigsz
+from branyi.szülő szülő
+minus
+select szigsz
+from branyi.szülő szülő
+where szülő.gyerekszig in (select szigsz from branyi.családtag családtag 
+where keresztnév = 'László');
+select plan_table_output from table(dbms_xplan.display('plan_table', '2A', 'serial'));
+
+b)
+explain plan SET statement_id='2B' for select szigsz
+from branyi.családtag családtag
+where szigsz not in (select cs1.szigsz
+from branyi.családtag cs1, branyi.családtag cs2
+where cs1.életévek < cs2.életévek);
+select plan_table_output from table(dbms_xplan.display('plan_table', '2B', 'serial'));
+
+c)
+explain plan SET statement_id='2C' for select családtag.szigsz, count(*)
+from branyi.családtag családtag, branyi.járt_ott járt_ott
+where családtag.szigsz = járt_ott.szigsz and családtag.keresztnév = 'László'
+group by családtag.szigsz
+having count(*) > 1;
+select * from table(dbms_xplan.display('plan_table', '2C', 'serial'));

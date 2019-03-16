@@ -1,0 +1,151 @@
+PÉLDA__1: REDO NAPLÓZÁS 
+
+<T1, START>
+<T1,A,5>
+<T2, START>
+<T1, COMMIT>
+<T2,B,10>
+<START CKPT(T2)>
+<T2,C,15>
+<T3, START>
+<T3,D,20>
+<END CKPT>
+<T2, COMMIT>
+<T3, COMMIT>
+
+
+
+Rendeséles példa (magyarázat): <T,ÉRTÉK>: T ügyféltől felveszem a rendelést. pl: pizzát rendel: ÉRTÉK=pizza
+<T,COMMIT>- leadta az összes rendelést
+pl: 
+<T,START>
+<T,PIZZA>
+<T,KÓLA>
+<T,COMMIT> -- az állapot, amikor az ügyfél sikeresen leadta a rendelést, már nem kér semmi mást
+ha ezután van <T,END> az azt jelenti, hogy az ügyfél meg is kapta amit akart
+(Ha megkapta amit akart azzal nem kell foglalkozni! A fenti példában ez a T1 tranzakció)
+
+
+MEGOLDÁS: HELYREÁLLÍTÁS: (fentről lefelé)
+
+<T2,B,10>
+<T2,C,15>
+<T3,D,20>
+<T2,END>
+<T3,END>
+
+MJ: T2 és T3 sikeresen leadta a rendelést, 
+de a kivitelnél probléma akadt, ezért "újra ki kellett vinnünk" és odaadni nekik
+
+-------------------------------------------------------------------------------------------------------
+PÉLDA__2: REDO NAPLÓZÁS 
+
+<T1, START>
+<T1,A,5>
+<T2, START>
+<T1, COMMIT>
+<T2,B,10>
+<START CKPT(T2)>
+<T2,C,15>
+<T3, START>
+<T3,D,20>
+<END CKPT>
+<T2, COMMIT>
+
+MEGOLDÁS: 
+
+<T2,B,10>
+<T2,C,15>
+<T3,ABORT>
+<T2,END>
+
+MJ: a T3 nem adta le a rendelését, csak elkezdte, 
+(de megszakadt a vonal), ezért lerakjuk a telefont és simán töröljük a rendelést.
+
+-------------------------------------------------------------------------------------------------------
+PÉLDA__3: REDO NAPLÓZÁS 
+
+<T1, START>
+<T1,A,5>
+<T2, START>
+<T1, COMMIT>
+<T2,B,10>
+<START CKPT(T2)>
+<T2,C,15>
+<T3, START>
+
+MEGOLDÁS:
+
+<T1,A,5>
+<T1,END>
+<T2,ABORT>
+<T3,ABORT>
+
+-------------------------------------------------------------------------------------------------------
+PÉLDA__4: REDO NAPLÓZÁS (Régi ZH (BRÁNYI))
+
+<T,START>
+<T,A,10>
+<U START>
+<U,B,20>
+<V START>
+<V,D,40>
+<W START>
+<W,E,50>
+<V,B,60>
+<V,COMMIT>
+<START CKPT(T,U,W)>
+<U,C,70>
+<U COMMIT>
+<W,A,80>
+
+MEGOLDÁS: 
+
+<T, ABORT>
+<U,B,20>
+<V,D,40>
+<W,ABORT>
+<V,B,60>
+<V,END>
+<U,C,70>
+<U,END>
+(sorrend ok?)
+
+-------------------------------------------------------------------------------------------------------
+FELADAT: REDO NAPLÓZÁS (Régi ZH (BRÁNYI))
+
+<T,START>
+<T,A,10>
+<T,C,30>
+<V,START>
+<V,D,40>
+<V,B,60>
+<V,COMMIT>
+<START CKPT(T,W)>
+<W,A,80>
+<T,COMMIT>
+<U,START>
+<W,D,90>
+<END CKPT>
+<U,E,40>
+<W,COMMIT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,11 @@
+1. Mely felhasználóknak van olyan partícionált táblája, amelyre legalább 3 NORMAL index van létrehozva? (Név)
+
+2. Mely felhasználók indexei foglalják a legtöbb helyet az adatbázisban?
+
+3. Adjuk meg azoknak a tábláknak a nevét, amelyeknek 1. és utolsó oszlopa is DATE típusú!
+
+4. Melyik táblatéren van a legkevesebb tábla?
+
+5. Adjuk emg az összes index szervezett táblák nevét, az index részük nevét, és a túlcsordulási részük nevét, ha van. Ha nincs túlcsordulási rész, akkor a lekérdezés azt írja ki a név helyett, hogy "nincs". (IOTnév, Indexnév, Túlcsordulásnév)
+
+6. Melyik a legnagyobb méretű cluster szegmens az adatbázisban és hány blokkból áll?

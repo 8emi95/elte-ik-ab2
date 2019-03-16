@@ -1,0 +1,12 @@
+2017.09.12
+1. AB2 GY
+
+http://people.inf.elte.hu/nikovits/adatbazis_eleres.txt
+host
+port
+service
+fh: T6ESML
+pwd: t6esml
+
+http://people.inf.elte.hu/branyi/
+1-es zh -> vizsgaid 1-2. hete

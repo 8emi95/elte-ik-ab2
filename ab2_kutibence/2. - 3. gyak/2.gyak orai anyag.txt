@@ -1,0 +1,61 @@
+SELECT * FROM sz1;
+SELECT * FROM dba_objects WHERE object_name LIKE 'SZ1';
+SELECT * FROM dba_synonyms WHERE synonym_name='SZ1';
+SELECT * FROM dba_objects WHERE object_name LIKE 'V1';
+SELECT * FROM dba_views WHERE view_name LIKE 'V1';
+
+SELECT first_name, last_name, salary FROM hr.employees
+WHERE employee_id BETWEEN 100 AND 110;
+
+SELECT * FROM dba_tables WHERE owner='ORAUSER' AND table_name='DOLGOZO';
+
+SELECT * FROM dba_tables WHERE owner='NIKOVITS' AND table_name='ELADASOK';
+SELECT * FROM dba_objects WHERE owner='NIKOVITS' AND object_name='ELADASOK';
+
+
+A NIKOVITS felhasználó CIKK táblája hány blokkot foglal le az adatbázisban? (ARAMIS)
+(Vagyis hány olyan blokk van, ami ehhez a táblához van rendelve és így
+azok már más táblákhoz nem adhatók hozzá?)
+
+select * from dba_tables where owner='NIKOVITS' AND table_name='CIKK';
+select * from dba_segments where owner='NIKOVITS' AND segment_name='CIKK';
+
+
+A NIKOVITS felhasználó CIKK táblájának adatai hány blokkban helyezkednek el?
+(Vagyis a tábla sorai ténylegesen hány blokkban vannak tárolva?)
+!!! -> Ez a kérdés nem ugyanaz mint az elõzõ.
+
+select * from NIKOVITS.CIKK;
+
+SELECT dbms_rowid.rowid_object(ROWID) adatobj, 
+        dbms_rowid.rowid_relative_fno(ROWID) fajl,
+        dbms_rowid.rowid_block_number(ROWID) blokk,
+        dbms_rowid.rowid_row_number(ROWID) sor
+FROM NIKOVITS.CIKK;
+
+SELECT distinct dbms_rowid.rowid_block_number(ROWID) blokk
+FROM NIKOVITS.CIKK;
+
+SELECT count(distinct dbms_rowid.rowid_block_number(ROWID)) blokk
+FROM NIKOVITS.CIKK;
+
+SELECT distinct dbms_rowid.rowid_block_number(ROWID)||'-'||dbms_rowid.rowid_block_number(ROWID) blokk
+FROM NIKOVITS.CIKK;
+
+Hozzunk létre egy táblát az EXAMPLE táblatéren, amelynek szerkezete azonos a nikovits.cikk 
+tábláéval és pontosan 128 KB helyet foglal az adatbázisban. Foglaljunk le manuálisan további 
+128 KB helyet a táblához. Vigyünk fel sorokat addig, amig az elsõ blokk tele nem 
+lesz, és 1 további sora lesz még a táblának a második blokkban.
+(A felvitelt plsql programmal végezzük és ne kézzel, mert úgy kicsit sokáig tartana.)
+
+create table cikk
+tablespace EXAMPLE
+storage (initial 128K)
+ as
+select * from nikovits.cikk where 0 = 1
+
+alter table cikk allocate extent (size 128K)
+
+select segment_name, bytes
+from dba_extents
+where owner = 'HS74YU' and segment_name = 'CIKK' and segment_type = 'TABLE';

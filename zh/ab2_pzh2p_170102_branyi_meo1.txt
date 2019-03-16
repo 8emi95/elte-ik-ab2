@@ -1,0 +1,24 @@
+PÉLDA__6: UNDO NAPLÓZÁS (Régi ZH (BRÁNYI)) // Lúcia
+
+<T,START>
+<T,A,10>
+<U START>
+<U,B,20>
+<V START>
+<V,D,40>
+<W START>
+<W,E,50>
+<V,B,60>
+<V,COMMIT>
+<START CKPT(T,U,W)>
+<U,C,70>
+<U COMMIT>
+<W,A,80>
+
+MEGOLDÁS: 
+
+<W,A,80>
+<W,E,50>
+<W,ABORT>
+<T,A,10>
+<T,ABORT>
